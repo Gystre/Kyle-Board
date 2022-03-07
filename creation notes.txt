@@ -22,6 +22,15 @@ yarn add -D @types/cors
 //postgres for db
 yarn add pg
 
+//dataloader for batch requesting multiple requests
+yarn add dataloader
+
+//argon2 for password encryption
+yarn add argon2
+
+//md5 for gravatar
+yarn add md5
+
 //graphql to interface with db
 yarn add graphql type-graphql class-validator
 yarn add -D @types/validator
@@ -55,3 +64,10 @@ yarn add @chakra-ui/react @emotion/react@^11 @emotion/styled@^11 framer-motion@^
 
 //apollo client
 yarn add @apollo/client
+
+//graphql
+yarn add graphql
+yarn add -D @graphql-codegen/cli
+
+//formik
+yarn add formik

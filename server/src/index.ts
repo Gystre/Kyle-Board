@@ -1,3 +1,4 @@
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import { ApolloServer } from "apollo-server-express";
 import connectRedis from "connect-redis";
 import cors from "cors";
@@ -9,7 +10,11 @@ import path from "path";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { COOKIE_NAME, __prod__ } from "./constants";
-import { HelloResolver } from "./resolvers/hello";
+import { HelloResolver } from "./hello";
+import { Post } from "./models/post/PostEntity";
+import { PostResolver } from "./models/post/PostResolver";
+import { User } from "./models/user/UserEntity";
+import { UserResolver } from "./models/user/UserResolver";
 
 const main = async () => {
     //create db connection for typeorm
@@ -17,10 +22,12 @@ const main = async () => {
         type: "postgres",
         url: process.env.DATABASE_URL,
         logging: true,
-        // synchronize: true, //create the tables automatically without running a migration (good for development)
+        synchronize: true, //create the tables automatically without running a migration (good for development)
         migrations: [path.join(__dirname, "./migrations/*")],
-        entities: [], //MAKE SURE TO ADD ANY NEW ENTITIES HERE
+        entities: [User, Post], //MAKE SURE TO ADD ANY NEW ENTITIES HERE
     });
+
+    // connection.runMigrations();
 
     //create an instance of express
     const app = express();
@@ -51,9 +58,15 @@ const main = async () => {
         store: new RedisStore({
             client: redis,
             disableTTL: true,
-            disableTouch: true, //disables lifecylce of cookies so they last forever
+            disableTouch: true, //disables lifecycle of cookies so they last forever
         }),
         cookie: {
+            // use these settings so that apollo graphql editor works with express-session
+            // figure this out later, will need to fake ssl to get https on front end or use different graphql editor :/
+            // https://www.reddit.com/r/graphql/comments/pxhvi7/comment/hkfabxl/?utm_source=share&utm_medium=web2x&context=3
+            // secure: true,
+            // sameSite: "none",
+
             maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //10 years
             httpOnly: true, //make sure cookie only available on serverside
             sameSite: "lax", //protect csrf
@@ -69,7 +82,7 @@ const main = async () => {
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [HelloResolver],
+            resolvers: [HelloResolver, UserResolver, PostResolver],
             validate: false,
         }),
 
@@ -79,6 +92,15 @@ const main = async () => {
             res,
             redis,
         }),
+
+        plugins: [
+            ApolloServerPluginLandingPageGraphQLPlayground({
+                // options
+                settings: {
+                    "request.credentials": "same-origin",
+                },
+            }),
+        ],
     });
 
     //creates graphql endpoint for us on express
@@ -90,7 +112,9 @@ const main = async () => {
 
     //start the server
     app.listen(parseInt(process.env.PORT), () => {
-        console.log("FTS-test server started on localhost:" + process.env.PORT);
+        console.log(
+            "Kyle Board server started on localhost:" + process.env.PORT
+        );
     });
 };
 

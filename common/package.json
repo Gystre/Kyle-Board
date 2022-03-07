@@ -11,5 +11,8 @@
     "scripts": {
         "build": "tsc",
         "build:watch": "tsc --watch"
+    },
+    "dependencies": {
+        "yup": "^0.32.11"
     }
 }
