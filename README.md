@@ -7,13 +7,16 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   CI/CD (github actions to docker build on pc and pull on vm)
 -   load balancing (docker swarm)
 -   FTS (postgres)
--   live updates (socket io)
 -   anti nsfw (ml stuff and other libraries)
--   anti spam and ddos (cloudflare and hcaptcha)
+-   anti spam and ddos (cloudflare, hcaptcha, and server ratelimits)
 -   image uploading (backblaze)
 -   login, register, and forgot password system
 -   oauth? (if it's free)
--   standardize input validation on backend (dunno figure out smthn lol)
+
+## Done
+
+-   live updates (socket io)
+-   standardize input validation on backend (dunno figure out smthn lol) (ended up using yup)
 
 #### Misc
 

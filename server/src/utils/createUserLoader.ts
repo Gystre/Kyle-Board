@@ -1,4 +1,5 @@
 import DataLoader from "dataloader";
+import { safeUserSelect } from "../constants";
 import { User } from "../models/user/UserEntity";
 
 /*
@@ -12,7 +13,9 @@ Caches so if we already have a user in memory, just use that
 export const createUserLoader = () =>
     new DataLoader<number, User>(async (userIds) => {
         //find the users by their ids
-        const users = await User.findByIds(userIds as number[]);
+        const users = await User.findByIds(userIds as number[], {
+            select: safeUserSelect,
+        });
         const userIdToUser: Record<number, User> = {};
 
         //fill the array with the users at the id index

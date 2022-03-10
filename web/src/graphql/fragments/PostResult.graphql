@@ -1,0 +1,9 @@
+fragment PostResult on Post {
+    id
+    createdAt
+    updatedAt
+    text
+    creator {
+        ...RegularUser
+    }
+}

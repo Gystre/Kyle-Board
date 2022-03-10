@@ -1,0 +1,11 @@
+mutation CreatePost($text: String!) {
+    createPost(text: $text) {
+        post {
+            ...PostResult
+        }
+
+        errors {
+            ...RegularError
+        }
+    }
+}

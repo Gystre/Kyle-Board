@@ -5,18 +5,25 @@ import {
     FormLabel,
     Input,
     FormErrorMessage,
+    Textarea,
 } from "@chakra-ui/react";
 
 // ripped from chakra docs example
 //make this component take in any props that a normal <input> element would take
-type Props = InputHTMLAttributes<HTMLInputElement> & {
+type Props = InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> & {
     label: string;
     name: string;
+    textarea?: boolean;
 };
 
-export const InputField: React.FC<Props> = ({ label, size: _, ...props }) => {
+export const InputField: React.FC<Props> = ({
+    label,
+    textarea,
+    size: _,
+    ...props
+}) => {
     //check if textarea, then change the component acorrdingly
-    let InputOrTextArea = Input;
+    let InputOrTextArea = textarea ? Textarea : Input;
 
     const [field, { error }] = useField(props);
     return (

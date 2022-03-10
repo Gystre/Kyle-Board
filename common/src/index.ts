@@ -5,6 +5,10 @@ export enum PermissionLevel {
     Admin,
 }
 
+export enum SocketCmds {
+    SendMessage = "SendMessage",
+}
+
 export const createRegisterSchema = object().shape({
     email: string().email().max(255).required(),
     username: string()
@@ -24,4 +28,8 @@ export const createLoginSchema = object().shape({
         .max(255, "Too long!")
         .required(),
     password: string().min(3).max(255).required(),
+});
+
+export const createPostSchema = object().shape({
+    text: string().min(1, "Too short!").max(300, "Too long!").required(),
 });

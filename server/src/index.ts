@@ -7,6 +7,7 @@ import express from "express";
 import session from "express-session";
 import Redis from "ioredis";
 import path from "path";
+import { Server as IoServer, Socket } from "socket.io";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { COOKIE_NAME, __prod__ } from "./constants";
@@ -15,6 +16,9 @@ import { Post } from "./models/post/PostEntity";
 import { PostResolver } from "./models/post/PostResolver";
 import { User } from "./models/user/UserEntity";
 import { UserResolver } from "./models/user/UserResolver";
+import { createUserLoader } from "./utils/createUserLoader";
+
+export var io: IoServer;
 
 const main = async () => {
     //create db connection for typeorm
@@ -91,12 +95,13 @@ const main = async () => {
             req,
             res,
             redis,
+            userLoader: createUserLoader(), //a new userLoader will be created on every request
         }),
 
         plugins: [
             ApolloServerPluginLandingPageGraphQLPlayground({
-                // options
                 settings: {
+                    // need this so cookies are created while using graphql playground
                     "request.credentials": "same-origin",
                 },
             }),
@@ -111,10 +116,49 @@ const main = async () => {
     });
 
     //start the server
-    app.listen(parseInt(process.env.PORT), () => {
+    const httpServer = app.listen(parseInt(process.env.PORT), () => {
         console.log(
             "Kyle Board server started on localhost:" + process.env.PORT
         );
+    });
+
+    //stick on the socket.io stuff
+    io = new IoServer(httpServer, {
+        cookie: true,
+        cors: {
+            origin: process.env.CORS_ORIGIN,
+            methods: ["GET", "POST"],
+            credentials: true,
+        },
+    });
+
+    io.use((socket, next) => {
+        //adding the same middleware here allows us to use the same sessionID as the authentication and gives us access to the user id
+        let req = socket.request as express.Request;
+        let res = req.res as express.Response;
+        sessionMiddleware(req, res, next as express.NextFunction);
+    });
+
+    io.on("connection", async (socket: Socket) => {
+        const req = socket.request as express.Request;
+        const sessionId = "sess:" + req.sessionID;
+
+        //check redis for the userId
+        if (!(await redis.exists(sessionId))) {
+            //not authenticated
+            return;
+        }
+
+        const userId = JSON.parse(
+            (await redis.get(sessionId)) as string
+        ).userId;
+
+        console.log("users connected", io.engine.clientsCount);
+        console.log("id:", userId, ",", sessionId, "connected");
+
+        socket.on("disconnect", () => {
+            console.log("user disconnected");
+        });
     });
 };
 

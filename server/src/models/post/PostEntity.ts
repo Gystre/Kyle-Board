@@ -27,15 +27,7 @@ export class Post extends BaseEntity {
 
     @Field()
     @Column()
-    title!: string;
-
-    @Field()
-    @Column()
     text!: string;
-
-    @Field(() => String)
-    @Column({ default: "" })
-    imageLink: String;
 
     @Field(() => String) //make sure explicitly defining type for every field
     @CreateDateColumn()

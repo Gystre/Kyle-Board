@@ -51,6 +51,9 @@ npx gen-env-types .env -o src/env.d.ts -e .
 //create db
 createdb -U postgres FTS-test
 
+//sockets
+yarn add socket-io
+
 //change db url in .env file and ormconfig.json
 //paste over ormconfig.json
 //paste over .gitignore
@@ -60,7 +63,7 @@ WEB WEB WEB WEB WEB WEB WEB WEB WEB WEB WEB
 npx create-next-app@latest --ts web
 
 //chakra
-yarn add @chakra-ui/react @emotion/react@^11 @emotion/styled@^11 framer-motion@^5
+yarn add @chakra-ui/react @emotion/react@^11 @emotion/styled@^11 framer-motion@^5 @chakra-ui/icons
 
 //apollo client
 yarn add @apollo/client
@@ -71,3 +74,6 @@ yarn add -D @graphql-codegen/cli
 
 //formik
 yarn add formik
+
+//sockets
+yarn add socket.io-client

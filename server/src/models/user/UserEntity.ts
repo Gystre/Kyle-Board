@@ -24,18 +24,18 @@ export class User extends BaseEntity {
 
     @Field()
     @Column({ unique: true })
-    email!: string;
+    email?: string;
 
     @Field()
     @Column()
-    password!: string;
+    password?: string;
 
     @Field()
     @Column()
     imageUrl!: string;
 
-    @Column(() => Number)
-    permissionLevel: PermissionLevel;
+    @Column({ type: "int", default: PermissionLevel.User })
+    permissionLevel!: PermissionLevel;
 
     //one user can have multiple posts, an "array" of them wowoowowwo!!!!
     @OneToMany(() => Post, (post) => post.creator)

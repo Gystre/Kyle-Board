@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { NextPageContext } from "next";
 import { withApollo as createWithApollo } from "next-apollo";
+import { PaginatedPosts } from "../generated/graphql";
 
 const createClient = (ctx?: NextPageContext) =>
     new ApolloClient({
@@ -12,7 +13,30 @@ const createClient = (ctx?: NextPageContext) =>
                     ? ctx?.req?.headers.cookie
                     : undefined) || "",
         },
-        cache: new InMemoryCache({}),
+        cache: new InMemoryCache({
+            typePolicies: {
+                Query: {
+                    fields: {
+                        posts: {
+                            // need this so apollo knows what to do after fetchMore() is called
+                            keyArgs: [],
+                            merge(
+                                existing: PaginatedPosts | undefined,
+                                incoming: PaginatedPosts
+                            ): PaginatedPosts {
+                                return {
+                                    ...incoming,
+                                    posts: [
+                                        ...(existing?.posts || []),
+                                        ...incoming.posts,
+                                    ],
+                                };
+                            },
+                        },
+                    },
+                },
+            },
+        }),
     });
 
 export const withApollo = createWithApollo(createClient);

@@ -3,7 +3,7 @@ import NextLink from "next/link";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 import { useRouter } from "next/router";
 import { useApolloClient } from "@apollo/client";
-import { Flex, Button, Box, Heading, Link } from "@chakra-ui/react";
+import { Flex, Button, Box, Heading, Link, Avatar } from "@chakra-ui/react";
 import { isServer } from "../utils/isServer";
 
 interface Props {}
@@ -33,10 +33,7 @@ export const Navbar: React.FC<Props> = () => {
         //user is logged in
         body = (
             <Flex align="center">
-                <NextLink href="/create-post" passHref>
-                    <Button mr={4}>Create post</Button>
-                </NextLink>
-
+                <Avatar mr={2} name={data.me.username} src={data.me.imageUrl} />
                 <Box mr={2}>{data.me.username}</Box>
                 <Button
                     onClick={async () => {

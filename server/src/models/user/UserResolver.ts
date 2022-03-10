@@ -1,4 +1,8 @@
-import { createLoginSchema, createRegisterSchema } from "@kyle/common";
+import {
+    createLoginSchema,
+    createRegisterSchema,
+    PermissionLevel,
+} from "@kyle/common";
 import argon2 from "argon2";
 import { FieldError } from "src/utils/Response";
 import {
@@ -82,6 +86,7 @@ export class UserResolver {
                 email,
                 password: hashedPassword,
                 imageUrl,
+                permissionLevel: PermissionLevel.User,
             }).save();
 
             //store uid session
@@ -147,7 +152,7 @@ export class UserResolver {
         }
 
         //check password
-        const valid = await argon2.verify(user.password, password);
+        const valid = await argon2.verify(user.password as string, password);
         if (!valid) {
             return {
                 errors: [
