@@ -6,6 +6,7 @@ import {
     Input,
     Text,
     Heading,
+    useToast,
 } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { withApollo } from "../utils/withApollo";
@@ -15,14 +16,29 @@ import { useLoginMutation, MeQuery, MeDocument } from "../generated/graphql";
 import NextLink from "next/link";
 import { toErrorMap } from "../utils/toErrorMap";
 import { InputField } from "../components/InputField";
+import { Layout } from "../components/Layout";
+import { useEffect } from "react";
 
 export const Login: React.FC<{}> = () => {
     //used to redirect user
     const router = useRouter();
+    const toast = useToast();
     const [login] = useLoginMutation();
 
+    useEffect(() => {
+        if (router.query.forgotPassword) {
+            toast({
+                title: `Reset password email sent`,
+                description:
+                    "If an account with that email exists, check your inbox for the email!",
+                position: "top",
+                isClosable: true,
+            });
+        }
+    }, []);
+
     return (
-        <Wrapper variant="small">
+        <Layout variant="small">
             <Heading fontSize="xl">Login</Heading>
             <Text mb="3">haha loser</Text>
             <Formik
@@ -40,8 +56,8 @@ export const Login: React.FC<{}> = () => {
                             });
 
                             //clear all posts on login
-                            // cache.evict({ fieldName: "posts:{}" });
-                            // cache.gc();
+                            cache.evict({ fieldName: "posts:{}" });
+                            cache.gc();
                         },
                     });
 
@@ -101,7 +117,7 @@ export const Login: React.FC<{}> = () => {
                     <Link color="teal.500">register now</Link>
                 </NextLink>
             </Text>
-        </Wrapper>
+        </Layout>
     );
 };
 

@@ -4,7 +4,6 @@ import {
     PermissionLevel,
 } from "@kyle/common";
 import argon2 from "argon2";
-import { FieldError } from "src/utils/Response";
 import {
     Arg,
     Ctx,
@@ -15,11 +14,15 @@ import {
     Resolver,
     Root,
 } from "type-graphql";
-import { COOKIE_NAME } from "../../constants";
+import { v4 } from "uuid";
+import { COOKIE_NAME, FORGET_PASSWORD_PREFIX, __prod__ } from "../../constants";
 import { MyContext } from "../../types";
 import { formatYupError } from "../../utils/formatYupError";
+import { FieldError } from "../../utils/Response";
+import { sendEmail } from "../../utils/sendEmail";
 import { User } from "./UserEntity";
 import { UserResponse } from "./UserResponse";
+
 const md5 = require("md5");
 
 @Resolver(User)
@@ -35,9 +38,6 @@ export class UserResolver {
 
         return "";
     }
-
-    //NEED CHANGE PASSWORD
-    //NEED FORGOT PASSWORD
 
     @Query(() => User, { nullable: true })
     me(@Ctx() { req }: MyContext) {
@@ -196,5 +196,105 @@ export class UserResolver {
                 resolve(true);
             })
         );
+    }
+
+    //email the user a link they can click to reset their password
+    //contains a uuid that is good for one time
+    @Mutation(() => Boolean)
+    async forgotPassword(
+        @Arg("email") email: string,
+        @Ctx() { redis }: MyContext
+    ) {
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            //email not in db
+            //returning true and doing nothing to prevent people from phishing through website for valid emails
+            return true;
+        }
+
+        //create unique one time use token
+        const token = v4();
+
+        //store the token in redis
+        await redis.set(
+            FORGET_PASSWORD_PREFIX + token,
+            user.id,
+            "ex",
+            1000 * 60 * 60 * 24 * 3 //good for up to 3 days
+        );
+
+        const domain = __prod__
+            ? "https://kylegodly.com"
+            : process.env.CORS_ORIGIN;
+        await sendEmail(
+            email,
+            `
+            <div>haha imagine forgetting ur password</div>
+            <div>Here's the reset link for ur forgotten password</div>
+            <a href="${domain}/change-password/${token}">reset password</a>
+            `
+        );
+        return true;
+    }
+
+    @Mutation(() => UserResponse)
+    async changePassword(
+        @Arg("token") token: string,
+        @Arg("newPassword") newPassword: string,
+        @Ctx() { redis, req }: MyContext
+    ): Promise<UserResponse> {
+        if (newPassword.length < 3) {
+            return {
+                errors: [
+                    {
+                        field: "newPassword",
+                        message: "length must be greater than 3",
+                    },
+                ],
+            };
+        }
+
+        const key = FORGET_PASSWORD_PREFIX + token;
+
+        //make sure the token is valid
+        const userId = await redis.get(key);
+        if (!userId) {
+            return {
+                errors: [
+                    {
+                        field: "token",
+                        message: "token expired",
+                    },
+                ],
+            };
+        }
+
+        //find the user according to their id
+        const userIdNum = parseInt(userId);
+        const user = await User.findOne(userIdNum);
+        if (!user) {
+            return {
+                errors: [
+                    {
+                        field: "token",
+                        message: "user no longer exists",
+                    },
+                ],
+            };
+        }
+
+        //save the new password to the db
+        User.update(
+            { id: userIdNum },
+            { password: await argon2.hash(newPassword) }
+        );
+
+        //remove the key from redis so it can't be used anymore
+        await redis.del(key);
+
+        //login user after changing the password
+        req.session.userId = user.id;
+
+        return { user };
     }
 }

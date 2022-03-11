@@ -8,6 +8,7 @@ import { withApollo } from "../utils/withApollo";
 import { createRegisterSchema } from "@kyle/common";
 import NextLink from "next/link";
 import { InputField } from "../components/InputField";
+import { Layout } from "../components/Layout";
 
 export const Register: React.FC<{}> = () => {
     //used to redirect user
@@ -15,7 +16,7 @@ export const Register: React.FC<{}> = () => {
     const [register] = useRegisterMutation();
 
     return (
-        <Wrapper variant="small">
+        <Layout variant="small">
             <Heading fontSize="xl">Register</Heading>
             <Text mb="3">
                 Join a community of millions! That is if every single cell in my
@@ -90,7 +91,7 @@ export const Register: React.FC<{}> = () => {
                     <Link color="teal.500">login now</Link>
                 </NextLink>
             </Text>
-        </Wrapper>
+        </Layout>
     );
 };
 

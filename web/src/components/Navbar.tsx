@@ -5,10 +5,10 @@ import { useRouter } from "next/router";
 import { useApolloClient } from "@apollo/client";
 import { Flex, Button, Box, Heading, Link, Avatar } from "@chakra-ui/react";
 import { isServer } from "../utils/isServer";
+import { socket } from "../utils/socket";
 
 interface Props {}
 export const Navbar: React.FC<Props> = () => {
-    const router = useRouter();
     const [logout, { loading: logoutFetching }] = useLogoutMutation(); //the mutation function we use on the front end to communicate with the backend
     const apolloClient = useApolloClient();
     const { data, loading } = useMeQuery({ skip: isServer() });
@@ -38,6 +38,7 @@ export const Navbar: React.FC<Props> = () => {
                 <Button
                     onClick={async () => {
                         await logout();
+                        socket.disconnect();
 
                         //reset cache
                         await apolloClient.resetStore();

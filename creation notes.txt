@@ -44,8 +44,12 @@ yarn add apollo-server-express
 //passwords
 yarn add argon2
 
+//emails
+yarn add nodemailer, uuid
+yarn add -D @types/nodemailer, @types/uuid
+
 //gen types for .env file and .env.example
-yarn add dotenv-safe
+yarn add dotenv-safe, gen-env-types
 npx gen-env-types .env -o src/env.d.ts -e .
 
 //create db

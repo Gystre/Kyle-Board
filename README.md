@@ -10,13 +10,13 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   anti nsfw (ml stuff and other libraries)
 -   anti spam and ddos (cloudflare, hcaptcha, and server ratelimits)
 -   image uploading (backblaze)
--   login, register, and forgot password system
 -   oauth? (if it's free)
 
 ## Done
 
 -   live updates (socket io)
 -   standardize input validation on backend (dunno figure out smthn lol) (ended up using yup)
+-   login, register, and forgot password system
 
 #### Misc
 
