@@ -6,6 +6,7 @@ import { useApolloClient } from "@apollo/client";
 import { Flex, Button, Box, Heading, Link, Avatar } from "@chakra-ui/react";
 import { isServer } from "../utils/isServer";
 import { socket } from "../utils/socket";
+import { PermissionLevel } from "@kyle/common";
 
 interface Props {}
 export const Navbar: React.FC<Props> = () => {
@@ -35,6 +36,11 @@ export const Navbar: React.FC<Props> = () => {
             <Flex align="center">
                 <Avatar mr={2} name={data.me.username} src={data.me.imageUrl} />
                 <Box mr={2}>{data.me.username}</Box>
+                {data.me.permissionLevel == PermissionLevel.Admin ? (
+                    <Box mr={2} color="red">
+                        (admin)
+                    </Box>
+                ) : null}
                 <Button
                     onClick={async () => {
                         await logout();

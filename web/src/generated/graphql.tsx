@@ -46,6 +46,7 @@ export type MutationCreatePostArgs = {
 
 
 export type MutationDeletePostArgs = {
+  creatorId: Scalars['Int'];
   id: Scalars['Int'];
 };
 
@@ -127,6 +128,7 @@ export type User = {
   id: Scalars['Float'];
   imageUrl: Scalars['String'];
   password: Scalars['String'];
+  permissionLevel: Scalars['Float'];
   updatedAt: Scalars['String'];
   username: Scalars['String'];
 };
@@ -137,11 +139,11 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
-export type PostResultFragment = { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string } };
+export type PostResultFragment = { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } };
 
 export type RegularErrorFragment = { __typename?: 'FieldError', field: string, message: string };
 
-export type RegularUserFragment = { __typename?: 'User', id: number, username: string, imageUrl: string };
+export type RegularUserFragment = { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number };
 
 export type ChangePasswordMutationVariables = Exact<{
   token: Scalars['String'];
@@ -149,17 +151,18 @@ export type ChangePasswordMutationVariables = Exact<{
 }>;
 
 
-export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null, user?: { __typename?: 'User', id: number, username: string, imageUrl: string } | null } };
+export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null, user?: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } | null } };
 
 export type CreatePostMutationVariables = Exact<{
   text: Scalars['String'];
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'PostResponse', post?: { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'PostResponse', post?: { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
 
 export type DeletePostMutationVariables = Exact<{
   id: Scalars['Int'];
+  creatorId: Scalars['Int'];
 }>;
 
 
@@ -178,7 +181,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', user?: { __typename?: 'User', id: number, username: string, imageUrl: string } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', user?: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -192,19 +195,19 @@ export type RegisterMutationVariables = Exact<{
 }>;
 
 
-export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', user?: { __typename?: 'User', id: number, username: string, imageUrl: string } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', user?: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, username: string, imageUrl: string } | null };
+export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } | null };
 
 export type PostQueryVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string } } | null };
+export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } } | null };
 
 export type PostsQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -212,13 +215,14 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string } }> } };
+export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } }> } };
 
 export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
   id
   username
   imageUrl
+  permissionLevel
 }
     `;
 export const PostResultFragmentDoc = gql`
@@ -318,8 +322,8 @@ export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutati
 export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
 export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
 export const DeletePostDocument = gql`
-    mutation DeletePost($id: Int!) {
-  deletePost(id: $id)
+    mutation DeletePost($id: Int!, $creatorId: Int!) {
+  deletePost(id: $id, creatorId: $creatorId)
 }
     `;
 export type DeletePostMutationFn = Apollo.MutationFunction<DeletePostMutation, DeletePostMutationVariables>;
@@ -338,6 +342,7 @@ export type DeletePostMutationFn = Apollo.MutationFunction<DeletePostMutation, D
  * const [deletePostMutation, { data, loading, error }] = useDeletePostMutation({
  *   variables: {
  *      id: // value for 'id'
+ *      creatorId: // value for 'creatorId'
  *   },
  * });
  */

@@ -1,4 +1,4 @@
-import { Flex, Button, Stack, Box, Spinner } from "@chakra-ui/react";
+import { Flex, Button, Stack, Box, Spinner, useToast } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { Layout } from "../components/Layout";
@@ -15,12 +15,11 @@ import { useState } from "react";
 
 const Home: NextPage = () => {
     const loggedIn = useIsAuth();
-
-    const [limit, setLimit] = useState<number>(30);
+    const toast = useToast();
 
     const { data, error, loading, fetchMore, variables } = usePostsQuery({
         variables: {
-            limit,
+            limit: 30,
             cursor: null, //cursor will tell us at what point we want to fetch posts
         },
         notifyOnNetworkStatusChange: true, //loading will become true if click loadMore (enable the little spinning thing on load more button)
@@ -67,6 +66,17 @@ const Home: NextPage = () => {
                                 setErrors(
                                     toErrorMap(response.data.createPost.errors)
                                 );
+                            } else {
+                                // reset the text
+                                values.text = "";
+
+                                toast({
+                                    title: `Posted!`,
+                                    position: "top",
+                                    status: "success",
+                                    isClosable: true,
+                                    duration: 2000,
+                                });
                             }
                         }}
                     >

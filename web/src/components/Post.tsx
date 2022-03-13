@@ -11,20 +11,20 @@ interface PostProps {
 
 export const Post: React.FC<PostProps> = ({ post: p }) => {
     return (
-        <NextLink href="/post/[id]" as={`/post/${p.id}`}>
-            <Flex p={5} shadow="md" borderWidth="1px">
-                <Avatar name={p.creator.username} src={p.creator.imageUrl} />
-                <Box ml={3}>
-                    <b>{p.creator.username}</b>
-                    <Text>{p.text}</Text>
-                    <Text mt={3} color="grey">
-                        <em>{convertStringToDate(p.createdAt)}</em>
-                    </Text>
-                </Box>
-                <Box ml="auto" pl={4}>
-                    <EditDeletePostButtons id={p.id} creatorId={p.creator.id} />
-                </Box>
-            </Flex>
-        </NextLink>
+        // <NextLink href="/post/[id]" as={`/post/${p.id}`}>
+        <Flex p={5} shadow="md" borderWidth="1px">
+            <Avatar name={p.creator.username} src={p.creator.imageUrl} />
+            <Box ml={3}>
+                <b>{p.creator.username}</b>
+                <Text>{p.text}</Text>
+                <Text mt={3} color="grey">
+                    <em>{convertStringToDate(p.createdAt)}</em>
+                </Text>
+            </Box>
+            <Box ml="auto" pl={4}>
+                <EditDeletePostButtons id={p.id} creatorId={p.creator.id} />
+            </Box>
+        </Flex>
+        // </NextLink>
     );
 };

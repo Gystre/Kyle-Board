@@ -34,6 +34,7 @@ export class User extends BaseEntity {
     @Column()
     imageUrl!: string;
 
+    @Field()
     @Column({ type: "int", default: PermissionLevel.User })
     permissionLevel!: PermissionLevel;
 

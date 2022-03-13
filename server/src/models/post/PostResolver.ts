@@ -1,4 +1,4 @@
-import { createPostSchema, SocketCmds } from "@kyle/common";
+import { createPostSchema, PermissionLevel, SocketCmds } from "@kyle/common";
 import {
     Arg,
     Ctx,
@@ -141,10 +141,22 @@ export class PostResolver {
     @UseMiddleware(isAuth)
     async deletePost(
         @Arg("id", () => Int) id: number,
+        @Arg("creatorId", () => Int) creatorId: number,
         @Ctx() { req }: MyContext
     ): Promise<boolean> {
-        await Post.delete({ id, creatorId: req.session.userId });
+        // can't delete if not admin or doesn't own post
+        const user = await User.findOne(req.session.userId, {
+            select: ["permissionLevel"],
+        });
 
-        return true;
+        if (
+            user?.permissionLevel == PermissionLevel.Admin ||
+            creatorId == req.session.userId
+        ) {
+            await Post.delete({ id, creatorId });
+            return true;
+        }
+
+        return false;
     }
 }

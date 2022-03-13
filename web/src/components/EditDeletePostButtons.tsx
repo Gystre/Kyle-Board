@@ -1,18 +1,23 @@
-import { Box, IconButton } from "@chakra-ui/react";
+import { Box, IconButton, useToast } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useDeletePostMutation, useMeQuery } from "../generated/graphql";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { PermissionLevel } from "@kyle/common";
 
 interface Props {
     id: number;
     creatorId: number;
 }
 export const EditDeletePostButtons: React.FC<Props> = ({ id, creatorId }) => {
+    const toast = useToast();
     const { data: meData } = useMeQuery();
     const [deletePost] = useDeletePostMutation();
 
     //only show the edit and delete buttons if user owns the post
-    if (meData?.me?.id !== creatorId) {
+    if (
+        meData?.me?.id !== creatorId &&
+        meData?.me?.permissionLevel != PermissionLevel.Admin
+    ) {
         return null;
     }
 
@@ -30,19 +35,32 @@ export const EditDeletePostButtons: React.FC<Props> = ({ id, creatorId }) => {
                 ml="auto"
                 icon={<DeleteIcon />}
                 aria-label="Delete Post"
-                onTouchMove={() => {
-                    console.log("smthn");
-                }}
                 onClick={() => {
                     deletePost({
-                        variables: { id },
+                        variables: { id, creatorId },
 
                         //remove the post from the cache so the user doesn't see it anymore
-                        update: (cache) => {
-                            //same as invalidate cache in urql
-                            //Post:66
-                            cache.evict({ id: "Post:" + id });
-                            cache.gc();
+                        // BUG: doesn't work with posts created with sockets
+                        update: (cache, { data }) => {
+                            if (data?.deletePost) {
+                                cache.evict({ id: "Post:" + id });
+                                cache.gc();
+
+                                toast({
+                                    title: `Deleted post ${id}`,
+                                    position: "top",
+                                    status: "success",
+                                    isClosable: true,
+                                });
+                            } else {
+                                toast({
+                                    title: `Failed to delete post ${id}`,
+                                    description: `You don't own this post or you aren't an admin`,
+                                    position: "top",
+                                    status: "error",
+                                    isClosable: true,
+                                });
+                            }
                         },
                     });
                 }}

@@ -18,6 +18,10 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   standardize input validation on backend (dunno figure out smthn lol) (ended up using yup)
 -   login, register, and forgot password system
 
+## Bugs
+
+-   deleting post created by socket deletes on server but not on client
+
 #### Misc
 
 Dump database schema
