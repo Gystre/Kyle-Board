@@ -1,4 +1,13 @@
-import { Flex, Button, Stack, Box, Spinner, useToast } from "@chakra-ui/react";
+import {
+    Flex,
+    Button,
+    Stack,
+    Box,
+    Spinner,
+    useToast,
+    IconButton,
+    CloseButton,
+} from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { Layout } from "../components/Layout";
@@ -11,7 +20,7 @@ import { createPostSchema } from "@kyle/common";
 import { useIsAuth } from "../utils/useIsAuth";
 import { Post } from "../components/Post";
 import NewPosts from "../components/NewPosts";
-import { useState } from "react";
+import { FileUpload } from "../components/FileUpload";
 
 const Home: NextPage = () => {
     const loggedIn = useIsAuth();
@@ -54,7 +63,7 @@ const Home: NextPage = () => {
                 {loggedIn ? (
                     <Formik
                         validationSchema={createPostSchema}
-                        initialValues={{ text: "" }}
+                        initialValues={{ text: "", file: null as File | null }}
                         onSubmit={async (values, { setErrors }) => {
                             const response = await createPost({
                                 variables: { text: values.text },
@@ -69,6 +78,7 @@ const Home: NextPage = () => {
                             } else {
                                 // reset the text
                                 values.text = "";
+                                values.file = null;
 
                                 toast({
                                     title: `Posted!`,
@@ -80,7 +90,12 @@ const Home: NextPage = () => {
                             }
                         }}
                     >
-                        {({ isSubmitting, handleChange }) => (
+                        {({
+                            isSubmitting,
+                            handleChange,
+                            setFieldValue,
+                            setFieldError,
+                        }) => (
                             <Form>
                                 <InputField
                                     label=""
@@ -88,6 +103,13 @@ const Home: NextPage = () => {
                                     placeholder="type smthn here"
                                     onChange={handleChange}
                                     textarea
+                                />
+
+                                <FileUpload
+                                    fieldName="file"
+                                    accept={".jpg, .jpeg, .png, .gif"}
+                                    setFieldValue={setFieldValue}
+                                    setFieldError={setFieldError}
                                 />
 
                                 <Button type="submit" isLoading={isSubmitting}>
@@ -119,7 +141,7 @@ const Home: NextPage = () => {
                             onClick={() => {
                                 fetchMore({
                                     variables: {
-                                        limit: 15,
+                                        limit: 30,
                                         cursor: data.posts.posts[
                                             data.posts.posts.length - 1
                                         ].createdAt, //get all items after the last item in the list

@@ -59,7 +59,7 @@ export const Navbar: React.FC<Props> = () => {
     }
     return (
         <Flex
-            zIndex={1}
+            zIndex={999}
             position="sticky"
             top={0}
             bg="tan"

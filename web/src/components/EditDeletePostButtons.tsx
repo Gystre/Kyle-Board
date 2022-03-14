@@ -1,8 +1,8 @@
 import { Box, IconButton, useToast } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useDeletePostMutation, useMeQuery } from "../generated/graphql";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { PermissionLevel } from "@kyle/common";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 interface Props {
     id: number;
@@ -25,7 +25,7 @@ export const EditDeletePostButtons: React.FC<Props> = ({ id, creatorId }) => {
         <Box>
             <NextLink href="/post/edit/[id]" as={`/post/edit/${id}`}>
                 <IconButton
-                    icon={<EditIcon />}
+                    icon={<FiEdit />}
                     ml="auto"
                     mr={4}
                     aria-label="Edit Post"
@@ -33,7 +33,7 @@ export const EditDeletePostButtons: React.FC<Props> = ({ id, creatorId }) => {
             </NextLink>
             <IconButton
                 ml="auto"
-                icon={<DeleteIcon />}
+                icon={<FiTrash2 />}
                 aria-label="Delete Post"
                 onClick={() => {
                     deletePost({

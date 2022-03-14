@@ -1,4 +1,4 @@
-import { object, string } from "yup";
+import { mixed, object, string } from "yup";
 
 export enum PermissionLevel {
     User = 0,
@@ -30,6 +30,23 @@ export const createLoginSchema = object().shape({
     password: string().min(3).max(255).required(),
 });
 
+export const MAX_FILE_SIZE_MB = 10;
+const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
+
 export const createPostSchema = object().shape({
     text: string().min(1, "Too short!").max(300, "Too long!").required(),
+    file: mixed()
+        .nullable()
+        .test(
+            "FILE_SIZE",
+            `File can't be bigger than ${MAX_FILE_SIZE_MB}mb`,
+            (value) =>
+                !value || (value && value.size < MAX_FILE_SIZE_MB * 1000000)
+        )
+        .test(
+            "FILE_TYPE",
+            "File must be a jpg, jpeg, png, or gif",
+            (value) =>
+                !value || (value && SUPPORTED_FORMATS.includes(value?.type))
+        ),
 });

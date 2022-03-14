@@ -11,7 +11,6 @@
     },
     "dependencies": {
         "@apollo/client": "^3.5.8",
-        "@chakra-ui/icons": "^1.1.7",
         "@chakra-ui/react": "^1.8.3",
         "@emotion/react": "^11",
         "@emotion/styled": "^11",
@@ -23,6 +22,7 @@
         "next-apollo": "^5.0.8",
         "react": "17.0.2",
         "react-dom": "17.0.2",
+        "react-icons": "^4.3.1",
         "socket.io-client": "^4.4.1"
     },
     "devDependencies": {
