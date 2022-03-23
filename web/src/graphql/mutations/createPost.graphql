@@ -1,0 +1,11 @@
+mutation CreatePost($text: String!, $newFileName: String) {
+    createPost(text: $text, newFileName: $newFileName) {
+        post {
+            ...PostResult
+        }
+
+        errors {
+            ...RegularError
+        }
+    }
+}

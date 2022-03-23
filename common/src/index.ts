@@ -35,6 +35,8 @@ const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
 
 export const createPostSchema = object().shape({
     text: string().min(1, "Too short!").max(300, "Too long!").required(),
+
+    // only used on frontend :/
     file: mixed()
         .nullable()
         .test(
@@ -49,4 +51,17 @@ export const createPostSchema = object().shape({
             (value) =>
                 !value || (value && SUPPORTED_FORMATS.includes(value?.type))
         ),
+});
+
+export const createS3Schema = object().shape({
+    fileName: string().min(1).max(255).required(),
+    fileType: string()
+        .required()
+        .min(1)
+        .test(
+            "FILE_TYPE",
+            "File must be a jpg, jpeg, png, or gif",
+            (value) => SUPPORTED_FORMATS.includes(value || "") // how can string possibly ever be undefined here???
+        )
+        .required(),
 });

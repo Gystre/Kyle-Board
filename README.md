@@ -4,23 +4,23 @@ Live board messaging thing. Using this project to experiment with integrating mo
 
 ## Todo
 
--   CI/CD (github actions to docker build on pc and pull on vm)
--   load balancing (docker swarm)
 -   FTS (postgres)
 -   anti nsfw (ml stuff and other libraries)
--   anti spam and ddos (cloudflare, hcaptcha, and server ratelimits)
--   image uploading (backblaze)
 -   oauth? (if it's free)
+-   CI/CD (github actions to docker build on pc and pull on vm)
+-   anti spam and ddos (cloudflare, hcaptcha, and server ratelimits)
+-   load balancing (docker swarm)
 
 ## Done
 
 -   live updates (socket io)
 -   standardize input validation on backend (dunno figure out smthn lol) (ended up using yup)
 -   login, register, and forgot password system
+-   image uploading (backblaze)
 
 ## Bugs
 
--   deleting post created by socket deletes on server but not on client
+-   deleting post created by socket deletes on server but not on client (write into apollo cache instead of creating manually)
 
 #### Misc
 

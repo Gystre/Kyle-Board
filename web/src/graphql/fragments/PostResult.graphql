@@ -3,6 +3,7 @@ fragment PostResult on Post {
     createdAt
     updatedAt
     text
+    fileUrl
     creator {
         ...RegularUser
     }

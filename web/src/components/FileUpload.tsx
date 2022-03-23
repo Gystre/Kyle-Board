@@ -7,7 +7,7 @@ import {
 } from "@chakra-ui/react";
 import { MAX_FILE_SIZE_MB } from "@kyle/common";
 import { useField } from "formik";
-import { useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
 import { FiImage } from "react-icons/fi";
 
 type FileUploadProps = {
@@ -19,6 +19,8 @@ type FileUploadProps = {
         shouldValidate?: boolean | undefined
     ) => void;
     setFieldError: (field: string, message: string | undefined) => void;
+    previewSrc: any | null;
+    setPreviewSrc: Dispatch<SetStateAction<any | null>>;
 };
 
 export const FileUpload: React.FC<FileUploadProps> = ({
@@ -26,14 +28,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     accept,
     setFieldValue,
     setFieldError,
+    previewSrc,
+    setPreviewSrc,
 }) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const imgRef = useRef<HTMLImageElement | null>(null);
-    // this is literally only used to check if we have an image loaded and to force update
-    // won't contain the actual src lol
-    const [src, setSrc] = useState<string>("");
 
-    const handleClick = () => inputRef.current?.click();
     const [field, { error }] = useField(fieldName);
 
     return (
@@ -56,6 +56,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                             fieldName,
                             `File can't be bigger than ${MAX_FILE_SIZE_MB}mb`
                         );
+                        return;
                     }
 
                     setFieldValue(fieldName, files[0]);
@@ -65,16 +66,18 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                     reader.onload = function (e) {
                         imgRef.current?.setAttribute(
                             "src",
-                            e.target?.result as any
+                            e.target?.result as string
                         );
-                        setSrc("something");
+                        setPreviewSrc(e.target?.result);
                     };
                     reader.readAsDataURL(files[0]);
                 }}
             />
             <Box>
                 <IconButton
-                    onClick={handleClick}
+                    onClick={() => {
+                        inputRef.current?.click();
+                    }}
                     aria-label="upload image"
                     icon={<FiImage />}
                     backgroundColor="transparent"
@@ -82,23 +85,25 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             </Box>
             {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
 
-            {src != "" ? (
+            {previewSrc ? (
                 <Box position="relative">
                     <Box position="absolute" left={0} zIndex={5}>
                         <CloseButton
                             backgroundColor="white"
-                            variant="solid"
                             margin={2}
                             onClick={() => {
                                 setFieldValue(fieldName, null);
-                                imgRef.current?.setAttribute("src", "");
-                                setSrc("");
+                                setPreviewSrc(null);
                             }}
                         />
                     </Box>
                 </Box>
             ) : null}
-            <img ref={(e) => (imgRef.current = e)} id="preview-image" src="" />
+            <img
+                ref={(e) => (imgRef.current = e)}
+                id="preview-image"
+                src={previewSrc ? previewSrc : ""}
+            />
         </FormControl>
     );
 };

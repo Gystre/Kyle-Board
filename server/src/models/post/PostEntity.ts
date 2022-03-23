@@ -29,6 +29,10 @@ export class Post extends BaseEntity {
     @Column()
     text!: string;
 
+    @Field({ nullable: true })
+    @Column({ nullable: true, default: null })
+    fileUrl?: string;
+
     @Field(() => String) //make sure explicitly defining type for every field
     @CreateDateColumn()
     createdAt: Date;

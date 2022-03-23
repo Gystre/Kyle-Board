@@ -15,6 +15,14 @@ export type Scalars = {
   Float: number;
 };
 
+export type B2Response = {
+  __typename?: 'B2Response';
+  authorizationToken?: Maybe<Scalars['String']>;
+  errors?: Maybe<Array<FieldError>>;
+  fileName?: Maybe<Scalars['String']>;
+  uploadUrl?: Maybe<Scalars['String']>;
+};
+
 export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
@@ -30,6 +38,7 @@ export type Mutation = {
   login: UserResponse;
   logout: Scalars['Boolean'];
   register: UserResponse;
+  signB2: B2Response;
   updatePost?: Maybe<PostResponse>;
 };
 
@@ -41,6 +50,7 @@ export type MutationChangePasswordArgs = {
 
 
 export type MutationCreatePostArgs = {
+  newFileName?: InputMaybe<Scalars['String']>;
   text: Scalars['String'];
 };
 
@@ -69,6 +79,12 @@ export type MutationRegisterArgs = {
 };
 
 
+export type MutationSignB2Args = {
+  fileName: Scalars['String'];
+  fileType: Scalars['String'];
+};
+
+
 export type MutationUpdatePostArgs = {
   id: Scalars['Int'];
   text: Scalars['String'];
@@ -85,6 +101,7 @@ export type Post = {
   createdAt: Scalars['String'];
   creator: User;
   creatorId: Scalars['Float'];
+  fileUrl?: Maybe<Scalars['String']>;
   id: Scalars['Float'];
   text: Scalars['String'];
   updatedAt: Scalars['String'];
@@ -139,7 +156,7 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
-export type PostResultFragment = { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } };
+export type PostResultFragment = { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } };
 
 export type RegularErrorFragment = { __typename?: 'FieldError', field: string, message: string };
 
@@ -155,10 +172,11 @@ export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: 
 
 export type CreatePostMutationVariables = Exact<{
   text: Scalars['String'];
+  newFileName?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'PostResponse', post?: { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'PostResponse', post?: { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
 
 export type DeletePostMutationVariables = Exact<{
   id: Scalars['Int'];
@@ -197,6 +215,14 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', user?: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
 
+export type SignB2MutationVariables = Exact<{
+  fileName: Scalars['String'];
+  fileType: Scalars['String'];
+}>;
+
+
+export type SignB2Mutation = { __typename?: 'Mutation', signB2: { __typename?: 'B2Response', authorizationToken?: string | null, uploadUrl?: string | null, fileName?: string | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -207,7 +233,7 @@ export type PostQueryVariables = Exact<{
 }>;
 
 
-export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } } | null };
+export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } } | null };
 
 export type PostsQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -215,7 +241,7 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } }> } };
+export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } }> } };
 
 export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
@@ -231,6 +257,7 @@ export const PostResultFragmentDoc = gql`
   createdAt
   updatedAt
   text
+  fileUrl
   creator {
     ...RegularUser
   }
@@ -283,8 +310,8 @@ export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswo
 export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
 export const CreatePostDocument = gql`
-    mutation CreatePost($text: String!) {
-  createPost(text: $text) {
+    mutation CreatePost($text: String!, $newFileName: String) {
+  createPost(text: $text, newFileName: $newFileName) {
     post {
       ...PostResult
     }
@@ -311,6 +338,7 @@ export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, C
  * const [createPostMutation, { data, loading, error }] = useCreatePostMutation({
  *   variables: {
  *      text: // value for 'text'
+ *      newFileName: // value for 'newFileName'
  *   },
  * });
  */
@@ -495,6 +523,45 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const SignB2Document = gql`
+    mutation SignB2($fileName: String!, $fileType: String!) {
+  signB2(fileName: $fileName, fileType: $fileType) {
+    errors {
+      ...RegularError
+    }
+    authorizationToken
+    uploadUrl
+    fileName
+  }
+}
+    ${RegularErrorFragmentDoc}`;
+export type SignB2MutationFn = Apollo.MutationFunction<SignB2Mutation, SignB2MutationVariables>;
+
+/**
+ * __useSignB2Mutation__
+ *
+ * To run a mutation, you first call `useSignB2Mutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSignB2Mutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [signB2Mutation, { data, loading, error }] = useSignB2Mutation({
+ *   variables: {
+ *      fileName: // value for 'fileName'
+ *      fileType: // value for 'fileType'
+ *   },
+ * });
+ */
+export function useSignB2Mutation(baseOptions?: Apollo.MutationHookOptions<SignB2Mutation, SignB2MutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SignB2Mutation, SignB2MutationVariables>(SignB2Document, options);
+      }
+export type SignB2MutationHookResult = ReturnType<typeof useSignB2Mutation>;
+export type SignB2MutationResult = Apollo.MutationResult<SignB2Mutation>;
+export type SignB2MutationOptions = Apollo.BaseMutationOptions<SignB2Mutation, SignB2MutationVariables>;
 export const MeDocument = gql`
     query Me {
   me {

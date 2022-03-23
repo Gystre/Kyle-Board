@@ -1,26 +1,23 @@
-import {
-    Flex,
-    Button,
-    Stack,
-    Box,
-    Spinner,
-    useToast,
-    IconButton,
-    CloseButton,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Spinner, Stack, useToast } from "@chakra-ui/react";
+import { createPostSchema } from "@kyle/common";
+import { Form, Formik } from "formik";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { Layout } from "../components/Layout";
-import { useCreatePostMutation, usePostsQuery } from "../generated/graphql";
-import { withApollo } from "../utils/withApollo";
-import { InputField } from "../components/InputField";
-import { Form, Formik } from "formik";
-import { toErrorMap } from "../utils/toErrorMap";
-import { createPostSchema } from "@kyle/common";
-import { useIsAuth } from "../utils/useIsAuth";
-import { Post } from "../components/Post";
-import NewPosts from "../components/NewPosts";
+import { useState } from "react";
 import { FileUpload } from "../components/FileUpload";
+import { InputField } from "../components/InputField";
+import { Layout } from "../components/Layout";
+import NewPosts from "../components/NewPosts";
+import { Post } from "../components/Post";
+import {
+    useCreatePostMutation,
+    usePostsQuery,
+    useSignB2Mutation,
+} from "../generated/graphql";
+import { toErrorMap } from "../utils/toErrorMap";
+import { uploadToB2 } from "../utils/uploadToB2";
+import { useIsAuth } from "../utils/useIsAuth";
+import { withApollo } from "../utils/withApollo";
 
 const Home: NextPage = () => {
     const loggedIn = useIsAuth();
@@ -35,12 +32,15 @@ const Home: NextPage = () => {
     });
 
     const [createPost] = useCreatePostMutation();
+    const [signB2] = useSignB2Mutation();
+
+    const [previewSrc, setPreviewSrc] = useState<any | null>(null);
 
     if (!loading && !data) {
         return (
             <div>
                 <div>
-                    server is probs down rn so have a picture of one of the
+                    i probs shut down the server so have a picture of one of the
                     greatest inspirations in my life
                 </div>
                 <img
@@ -51,6 +51,7 @@ const Home: NextPage = () => {
             </div>
         );
     }
+
     return (
         <>
             <Head>
@@ -65,8 +66,46 @@ const Home: NextPage = () => {
                         validationSchema={createPostSchema}
                         initialValues={{ text: "", file: null as File | null }}
                         onSubmit={async (values, { setErrors }) => {
+                            // file was added, get upload url and send post request
+                            var newFileName = null;
+                            if (values.file) {
+                                const signB2Response = await signB2({
+                                    variables: {
+                                        fileName: values.file.name as string,
+                                        fileType: values.file.type as string,
+                                    },
+                                });
+
+                                if (
+                                    signB2Response.errors != null ||
+                                    !signB2Response.data
+                                ) {
+                                    toast({
+                                        title: `Failed to upload image`,
+                                        position: "top",
+                                        status: "error",
+                                        isClosable: true,
+                                        duration: 2000,
+                                    });
+                                    return;
+                                }
+
+                                newFileName =
+                                    signB2Response.data.signB2.fileName;
+
+                                await uploadToB2(
+                                    values.file,
+                                    newFileName as string,
+                                    signB2Response.data.signB2
+                                        .uploadUrl as string,
+                                    signB2Response.data.signB2
+                                        .authorizationToken as string,
+                                    values.text
+                                );
+                            }
+
                             const response = await createPost({
-                                variables: { text: values.text },
+                                variables: { text: values.text, newFileName },
                             });
 
                             if (response.data?.createPost.errors) {
@@ -76,9 +115,10 @@ const Home: NextPage = () => {
                                     toErrorMap(response.data.createPost.errors)
                                 );
                             } else {
-                                // reset the text
+                                // reset values
                                 values.text = "";
                                 values.file = null;
+                                setPreviewSrc("");
 
                                 toast({
                                     title: `Posted!`,
@@ -110,6 +150,8 @@ const Home: NextPage = () => {
                                     accept={".jpg, .jpeg, .png, .gif"}
                                     setFieldValue={setFieldValue}
                                     setFieldError={setFieldError}
+                                    previewSrc={previewSrc}
+                                    setPreviewSrc={setPreviewSrc}
                                 />
 
                                 <Button type="submit" isLoading={isSubmitting}>

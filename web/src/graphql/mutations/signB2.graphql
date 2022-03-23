@@ -1,0 +1,11 @@
+mutation SignB2($fileName: String!, $fileType: String!) {
+    signB2(fileName: $fileName, fileType: $fileType) {
+        errors {
+            ...RegularError
+        }
+
+        authorizationToken
+        uploadUrl
+        fileName
+    }
+}

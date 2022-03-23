@@ -1,4 +1,10 @@
-import { createPostSchema, PermissionLevel, SocketCmds } from "@kyle/common";
+import {
+    createPostSchema,
+    createS3Schema,
+    PermissionLevel,
+    SocketCmds,
+} from "@kyle/common";
+import B2 from "backblaze-b2";
 import {
     Arg,
     Ctx,
@@ -15,8 +21,11 @@ import { safeUserSelect } from "../../constants";
 import { io } from "../../index";
 import { isAuth } from "../../middleware/IsAuth";
 import { MyContext } from "../../types";
+import { createValidateFileUrlSchema } from "../../utils/createValidateFileUrlSchema";
 import { formatYupError } from "../../utils/formatYupError";
+import { yyyymmdd } from "../../utils/yyyymmdd";
 import { User } from "../user/UserEntity";
+import { B2Response } from "./B2Response";
 import { PaginatedPosts } from "./PaginatedPosts";
 import { Post } from "./PostEntity";
 import { PostResponse } from "./PostResponse";
@@ -80,11 +89,16 @@ export class PostResolver {
     @UseMiddleware(isAuth)
     async createPost(
         @Arg("text") text: string,
-
+        @Arg("newFileName", { nullable: true }) newFileName: string,
         @Ctx() { req }: MyContext
     ): Promise<PostResponse> {
         try {
             await createPostSchema.validate({ text }, { abortEarly: false });
+
+            if (newFileName)
+                await createValidateFileUrlSchema.validate({
+                    newFileName,
+                });
         } catch (err) {
             return formatYupError(err);
         }
@@ -97,14 +111,79 @@ export class PostResolver {
             text,
             creatorId: req.session.userId,
             creator,
+            fileUrl: newFileName
+                ? "https://" +
+                  process.env.B2_BUCKET +
+                  "." +
+                  process.env.B2_ENDPOINT_URL +
+                  "/" +
+                  newFileName
+                : undefined, // null in postgres but undefined in js??????
         }).save();
-
-        console.log(post);
 
         // tell the connected people that something new was posted
         io.emit(SocketCmds.SendMessage, post);
 
         return { post };
+    }
+
+    @Mutation(() => B2Response)
+    @UseMiddleware(isAuth)
+    async signB2(
+        @Arg("fileName") fileName: string,
+        @Arg("fileType") fileType: string
+    ): Promise<B2Response> {
+        try {
+            await createS3Schema.validate(
+                { fileName, fileType },
+                { abortEarly: false }
+            );
+        } catch (err) {
+            return formatYupError(err);
+        }
+
+        // generate safe file name
+        const date = yyyymmdd();
+        const randomString = Math.random().toString(36).substring(2, 7);
+        const cleanFileName = fileName.toLowerCase().replace(/[^a-z0-9]/g, "-");
+        const newName = `images/${date}-${randomString}-${cleanFileName}`;
+
+        // get signed backblaze url
+        const b2 = new B2({
+            applicationKeyId: process.env.B2_KEY_ID,
+            applicationKey: process.env.B2_APPLICATION_KEY,
+        });
+
+        await b2.authorize();
+
+        const url = await b2.getUploadUrl({
+            bucketId: process.env.B2_BUCKET_ID,
+        });
+
+        if (url.status != "200") {
+            return {
+                errors: [
+                    {
+                        field: "getUploadUrl",
+                        message: "Failed and returned " + url.status,
+                    },
+                ],
+            };
+        }
+
+        type UrlData = {
+            authorizationToken: string;
+            bucketId: string;
+            uploadUrl: string;
+        };
+
+        const data: UrlData = url.data;
+
+        return {
+            uploadUrl: data.uploadUrl,
+            authorizationToken: data.authorizationToken,
+            fileName: newName,
+        };
     }
 
     @Mutation(() => PostResponse, { nullable: true })
@@ -149,14 +228,18 @@ export class PostResolver {
             select: ["permissionLevel"],
         });
 
+        // only admins or owner of post can delete
         if (
-            user?.permissionLevel == PermissionLevel.Admin ||
-            creatorId == req.session.userId
+            user?.permissionLevel != PermissionLevel.Admin &&
+            creatorId != req.session.userId
         ) {
-            await Post.delete({ id, creatorId });
-            return true;
+            return false;
         }
 
-        return false;
+        await Post.delete({ id, creatorId });
+
+        //delete image here
+
+        return true;
     }
 }
