@@ -13,7 +13,6 @@ Live board messaging thing. Using this project to experiment with integrating mo
 
 ## Lower Priority Todo (i.e. fix in next project lol)
 
--   lightbox preview for images (probs just stick in a prebuilt package or smthn)
 -   find a way to cache images to local storage, resetStore() refetches ALL images which kills my limits on backblaze (not sure where this happens in the stack, nextjs frontend maybe?)
 
 ## Done
@@ -22,6 +21,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   standardize input validation on backend (dunno figure out smthn lol) (ended up using yup)
 -   login, register, and forgot password system
 -   image uploading (backblaze)
+-   lightbox preview for images (probs just stick in a prebuilt package or smthn)
 
 ## Bugs
 

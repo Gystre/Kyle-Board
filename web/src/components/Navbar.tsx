@@ -70,7 +70,7 @@ export const Navbar: React.FC<Props> = () => {
             <Flex flex={1} m="auto" align="center" maxW={800}>
                 <NextLink href="/" passHref>
                     <Link>
-                        <Heading>Kyle Board</Heading>
+                        <Heading size="lg">Kyle Board</Heading>
                     </Link>
                 </NextLink>
                 <Box ml="auto">{body}</Box>
