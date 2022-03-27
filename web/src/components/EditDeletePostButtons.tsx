@@ -13,7 +13,7 @@ export const EditDeletePostButtons: React.FC<Props> = ({ id, creatorId }) => {
     const { data: meData } = useMeQuery();
     const [deletePost] = useDeletePostMutation();
 
-    //only show the edit and delete buttons if user owns the post
+    //only show the edit and delete buttons if user owns the post or is an admin
     if (
         meData?.me?.id !== creatorId &&
         meData?.me?.permissionLevel != PermissionLevel.Admin
@@ -23,14 +23,14 @@ export const EditDeletePostButtons: React.FC<Props> = ({ id, creatorId }) => {
 
     return (
         <Box>
-            <NextLink href="/post/edit/[id]" as={`/post/edit/${id}`}>
+            {/* <NextLink href="/post/edit/[id]" as={`/post/edit/${id}`}>
                 <IconButton
                     icon={<FiEdit />}
                     ml="auto"
                     mr={4}
                     aria-label="Edit Post"
                 />
-            </NextLink>
+            </NextLink> */}
             <IconButton
                 ml="auto"
                 icon={<FiTrash2 />}

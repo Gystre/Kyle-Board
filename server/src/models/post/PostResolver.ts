@@ -238,6 +238,9 @@ export class PostResolver {
 
         await Post.delete({ id, creatorId });
 
+        // tell everyone we deleted a post
+        io.emit(SocketCmds.DeleteMessage, id);
+
         //delete image here
 
         return true;

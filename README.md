@@ -11,6 +11,11 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   anti spam and ddos (cloudflare, hcaptcha, and server ratelimits)
 -   load balancing (docker swarm)
 
+## Lower Priority Todo (i.e. fix in next project lol)
+
+-   lightbox preview for images (probs just stick in a prebuilt package or smthn)
+-   find a way to cache images to local storage, resetStore() refetches ALL images which kills my limits on backblaze (not sure where this happens in the stack, nextjs frontend maybe?)
+
 ## Done
 
 -   live updates (socket io)
@@ -20,7 +25,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 
 ## Bugs
 
--   deleting post created by socket deletes on server but not on client (write into apollo cache instead of creating manually)
+-   logging out in different tab doesn't logout all tabs
 
 #### Misc
 

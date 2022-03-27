@@ -7,6 +7,7 @@ export enum PermissionLevel {
 
 export enum SocketCmds {
     SendMessage = "SendMessage",
+    DeleteMessage = "DeleteMessage",
 }
 
 export const createRegisterSchema = object().shape({

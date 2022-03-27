@@ -1,23 +1,21 @@
 import {
     Box,
-    Flex,
     Button,
-    Link,
-    Input,
-    Text,
+    Flex,
     Heading,
+    Link,
+    Text,
     useToast,
 } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
-import { withApollo } from "../utils/withApollo";
-import { useRouter } from "next/router";
-import { Wrapper } from "../components/Wrapper";
-import { useLoginMutation, MeQuery, MeDocument } from "../generated/graphql";
 import NextLink from "next/link";
-import { toErrorMap } from "../utils/toErrorMap";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
-import { useEffect } from "react";
+import { MeDocument, MeQuery, useLoginMutation } from "../generated/graphql";
+import { toErrorMap } from "../utils/toErrorMap";
+import { withApollo } from "../utils/withApollo";
 
 export const Login: React.FC<{}> = () => {
     //used to redirect user

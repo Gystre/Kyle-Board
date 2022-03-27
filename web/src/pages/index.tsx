@@ -1,19 +1,21 @@
 import { Box, Button, Flex, Spinner, Stack, useToast } from "@chakra-ui/react";
-import { createPostSchema } from "@kyle/common";
+import { createPostSchema, SocketCmds } from "@kyle/common";
 import { Form, Formik } from "formik";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileUpload } from "../components/FileUpload";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
-import NewPosts from "../components/NewPosts";
 import { Post } from "../components/Post";
 import {
+    PostResultFragment,
     useCreatePostMutation,
     usePostsQuery,
     useSignB2Mutation,
 } from "../generated/graphql";
+import { globalApolloClient } from "../utils/createWithApollo";
+import { socket } from "../utils/socket";
 import { toErrorMap } from "../utils/toErrorMap";
 import { uploadToB2 } from "../utils/uploadToB2";
 import { useIsAuth } from "../utils/useIsAuth";
@@ -23,9 +25,25 @@ const Home: NextPage = () => {
     const loggedIn = useIsAuth();
     const toast = useToast();
 
-    const { data, error, loading, fetchMore, variables } = usePostsQuery({
+    useEffect(() => {
+        socket.connect();
+        socket.on(SocketCmds.SendMessage, (post: PostResultFragment) => {
+            // date comes in 2022-03-08T23:18:21.279Z for some reason so fix it
+            post.createdAt = new Date(post.createdAt).getTime().toString();
+
+            // i should really insert the post manually into the cache but this works fine for now
+            globalApolloClient?.resetStore();
+        });
+
+        socket.on(SocketCmds.DeleteMessage, (id) => {
+            globalApolloClient?.cache.evict({ id: "Post:" + id });
+            globalApolloClient?.cache.gc();
+        });
+    }, [socket, globalApolloClient]);
+
+    const { data, error, loading, fetchMore } = usePostsQuery({
         variables: {
-            limit: 30,
+            limit: 15,
             cursor: null, //cursor will tell us at what point we want to fetch posts
         },
         notifyOnNetworkStatusChange: true, //loading will become true if click loadMore (enable the little spinning thing on load more button)
@@ -171,7 +189,6 @@ const Home: NextPage = () => {
                     </Box>
                 ) : (
                     <Stack spacing={8}>
-                        <NewPosts />
                         {data!.posts.posts.map((p) => (
                             <Post key={p.id} post={p} />
                         ))}
