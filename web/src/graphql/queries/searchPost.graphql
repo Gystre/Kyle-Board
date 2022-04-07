@@ -1,0 +1,5 @@
+query SearchPost($query: String!) {
+    searchPost(query: $query) {
+        ...PostResult
+    }
+}

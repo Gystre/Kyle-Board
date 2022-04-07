@@ -9,9 +9,8 @@ import Redis from "ioredis";
 import path from "path";
 import { Server as IoServer, Socket } from "socket.io";
 import { buildSchema } from "type-graphql";
-import { createConnection } from "typeorm";
+import { createConnection, getManager } from "typeorm";
 import { COOKIE_NAME, __prod__ } from "./constants";
-import { HelloResolver } from "./hello";
 import { Post } from "./models/post/PostEntity";
 import { PostResolver } from "./models/post/PostResolver";
 import { User } from "./models/user/UserEntity";
@@ -26,7 +25,7 @@ const main = async () => {
         type: "postgres",
         url: process.env.DATABASE_URL,
         logging: true,
-        synchronize: true, //create the tables automatically without running a migration (good for development)
+        // synchronize: true, //create the tables automatically without running a migration (keeping this off cuz deletes indices and ts_vectors)
         migrations: [path.join(__dirname, "./migrations/*")],
         entities: [User, Post], //MAKE SURE TO ADD ANY NEW ENTITIES HERE
     });
@@ -86,7 +85,7 @@ const main = async () => {
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [HelloResolver, UserResolver, PostResolver],
+            resolvers: [UserResolver, PostResolver],
             validate: false,
         }),
 
@@ -116,7 +115,39 @@ const main = async () => {
     });
 
     //start the server
-    const httpServer = app.listen(parseInt(process.env.PORT), () => {
+    const httpServer = app.listen(parseInt(process.env.PORT), async () => {
+        /*
+            select * from post inner join public."user" on post."creatorId" = public."user".id 
+            where post_document @@ plainto_tsquery('saist nah') or user_document @@ plainto_tsquery('saist nah')
+            order by ts_rank(post_document, plainto_tsquery('saist nah')) desc
+        */
+        /*
+            Streamline this process by creating helper functions that auto generate these statements for me
+            all i need to do is pass the table and indexable columns. Then again there are probs way better solutions
+            out there or better approaches to FTS than postgres built in solution
+        */
+        const documentExists = await getManager().query(
+            `SELECT column_name FROM information_schema.columns WHERE table_name='user' and column_name='user_document'`
+        );
+
+        if (documentExists.length == 0) {
+            // create the index column with gin indices
+            // maybe way to define tsvectors and indices more declatively with typeorm?
+            await getManager().query(`
+                ALTER TABLE post add column post_document tsvector GENERATED ALWAYS AS (
+                    setweight(to_tsvector('english', coalesce(text, '')), 'A')
+                ) STORED;
+
+                ALTER TABLE public."user" add column user_document tsvector GENERATED ALWAYS AS (
+                    setweight(to_tsvector('english', coalesce(username, '')), 'A')
+                ) STORED;
+
+                CREATE INDEX post_document_idx ON post USING GIN (post_document);
+                CREATE INDEX user_document_idx ON public."user" USING GIN (user_document);
+            `);
+
+            console.log("created the indices");
+        }
         console.log(
             "Kyle Board server started on localhost:" + process.env.PORT
         );

@@ -4,7 +4,6 @@ Live board messaging thing. Using this project to experiment with integrating mo
 
 ## Todo
 
--   FTS (postgres)
 -   anti nsfw (ml stuff and other libraries)
 -   oauth? (if it's free)
 -   CI/CD (github actions to docker build on pc and pull on vm)
@@ -14,6 +13,12 @@ Live board messaging thing. Using this project to experiment with integrating mo
 ## Lower Priority Todo (i.e. fix in next project lol)
 
 -   find a way to cache images to local storage, resetStore() refetches ALL images which kills my limits on backblaze (not sure where this happens in the stack, nextjs frontend maybe?)
+-   paginate search results
+-   rate limit searchs
+-   press tab in url to auto search (like in twitter.com and jisho.org)
+-   test overflow for profile picture search results
+-   lightbox for profile pictures
+-   upload custom profile picture
 
 ## Done
 
@@ -22,6 +27,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   login, register, and forgot password system
 -   image uploading (backblaze)
 -   lightbox preview for images (probs just stick in a prebuilt package or smthn)
+-   FTS (postgres)
 
 ## Bugs
 

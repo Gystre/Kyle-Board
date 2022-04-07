@@ -1,7 +1,6 @@
 fragment PostResult on Post {
     id
     createdAt
-    updatedAt
     text
     fileUrl
     creator {

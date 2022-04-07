@@ -116,10 +116,11 @@ export type PostResponse = {
 export type Query = {
   __typename?: 'Query';
   findById?: Maybe<User>;
-  hello: Scalars['String'];
   me?: Maybe<User>;
   post?: Maybe<Post>;
   posts: PaginatedPosts;
+  searchPost: Array<Post>;
+  searchUser: Array<User>;
 };
 
 
@@ -134,8 +135,19 @@ export type QueryPostArgs = {
 
 
 export type QueryPostsArgs = {
+  creatorId?: InputMaybe<Scalars['Int']>;
   cursor?: InputMaybe<Scalars['String']>;
   limit: Scalars['Int'];
+};
+
+
+export type QuerySearchPostArgs = {
+  query: Scalars['String'];
+};
+
+
+export type QuerySearchUserArgs = {
+  query: Scalars['String'];
 };
 
 export type User = {
@@ -156,7 +168,7 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
-export type PostResultFragment = { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } };
+export type PostResultFragment = { __typename?: 'Post', id: number, createdAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } };
 
 export type RegularErrorFragment = { __typename?: 'FieldError', field: string, message: string };
 
@@ -176,7 +188,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'PostResponse', post?: { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'PostResponse', post?: { __typename?: 'Post', id: number, createdAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
 
 export type DeletePostMutationVariables = Exact<{
   id: Scalars['Int'];
@@ -223,6 +235,13 @@ export type SignB2MutationVariables = Exact<{
 
 export type SignB2Mutation = { __typename?: 'Mutation', signB2: { __typename?: 'B2Response', authorizationToken?: string | null, uploadUrl?: string | null, fileName?: string | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } };
 
+export type FindByIdQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type FindByIdQuery = { __typename?: 'Query', findById?: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } | null };
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -233,15 +252,30 @@ export type PostQueryVariables = Exact<{
 }>;
 
 
-export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } } | null };
+export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: number, createdAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } } | null };
 
 export type PostsQueryVariables = Exact<{
   limit: Scalars['Int'];
   cursor?: InputMaybe<Scalars['String']>;
+  creatorId?: InputMaybe<Scalars['Int']>;
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, createdAt: string, updatedAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } }> } };
+export type PostsQuery = { __typename?: 'Query', posts: { __typename?: 'PaginatedPosts', hasMore: boolean, posts: Array<{ __typename?: 'Post', id: number, createdAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } }> } };
+
+export type SearchPostQueryVariables = Exact<{
+  query: Scalars['String'];
+}>;
+
+
+export type SearchPostQuery = { __typename?: 'Query', searchPost: Array<{ __typename?: 'Post', id: number, createdAt: string, text: string, fileUrl?: string | null, creator: { __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number } }> };
+
+export type SearchUserQueryVariables = Exact<{
+  query: Scalars['String'];
+}>;
+
+
+export type SearchUserQuery = { __typename?: 'Query', searchUser: Array<{ __typename?: 'User', id: number, username: string, imageUrl: string, permissionLevel: number }> };
 
 export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
@@ -255,7 +289,6 @@ export const PostResultFragmentDoc = gql`
     fragment PostResult on Post {
   id
   createdAt
-  updatedAt
   text
   fileUrl
   creator {
@@ -562,6 +595,41 @@ export function useSignB2Mutation(baseOptions?: Apollo.MutationHookOptions<SignB
 export type SignB2MutationHookResult = ReturnType<typeof useSignB2Mutation>;
 export type SignB2MutationResult = Apollo.MutationResult<SignB2Mutation>;
 export type SignB2MutationOptions = Apollo.BaseMutationOptions<SignB2Mutation, SignB2MutationVariables>;
+export const FindByIdDocument = gql`
+    query FindById($id: Int!) {
+  findById(id: $id) {
+    ...RegularUser
+  }
+}
+    ${RegularUserFragmentDoc}`;
+
+/**
+ * __useFindByIdQuery__
+ *
+ * To run a query within a React component, call `useFindByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useFindByIdQuery(baseOptions: Apollo.QueryHookOptions<FindByIdQuery, FindByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FindByIdQuery, FindByIdQueryVariables>(FindByIdDocument, options);
+      }
+export function useFindByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FindByIdQuery, FindByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FindByIdQuery, FindByIdQueryVariables>(FindByIdDocument, options);
+        }
+export type FindByIdQueryHookResult = ReturnType<typeof useFindByIdQuery>;
+export type FindByIdLazyQueryHookResult = ReturnType<typeof useFindByIdLazyQuery>;
+export type FindByIdQueryResult = Apollo.QueryResult<FindByIdQuery, FindByIdQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {
@@ -632,8 +700,8 @@ export type PostQueryHookResult = ReturnType<typeof usePostQuery>;
 export type PostLazyQueryHookResult = ReturnType<typeof usePostLazyQuery>;
 export type PostQueryResult = Apollo.QueryResult<PostQuery, PostQueryVariables>;
 export const PostsDocument = gql`
-    query Posts($limit: Int!, $cursor: String) {
-  posts(cursor: $cursor, limit: $limit) {
+    query Posts($limit: Int!, $cursor: String, $creatorId: Int) {
+  posts(cursor: $cursor, limit: $limit, creatorId: $creatorId) {
     hasMore
     posts {
       ...PostResult
@@ -656,6 +724,7 @@ export const PostsDocument = gql`
  *   variables: {
  *      limit: // value for 'limit'
  *      cursor: // value for 'cursor'
+ *      creatorId: // value for 'creatorId'
  *   },
  * });
  */
@@ -670,3 +739,73 @@ export function usePostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Post
 export type PostsQueryHookResult = ReturnType<typeof usePostsQuery>;
 export type PostsLazyQueryHookResult = ReturnType<typeof usePostsLazyQuery>;
 export type PostsQueryResult = Apollo.QueryResult<PostsQuery, PostsQueryVariables>;
+export const SearchPostDocument = gql`
+    query SearchPost($query: String!) {
+  searchPost(query: $query) {
+    ...PostResult
+  }
+}
+    ${PostResultFragmentDoc}`;
+
+/**
+ * __useSearchPostQuery__
+ *
+ * To run a query within a React component, call `useSearchPostQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchPostQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchPostQuery({
+ *   variables: {
+ *      query: // value for 'query'
+ *   },
+ * });
+ */
+export function useSearchPostQuery(baseOptions: Apollo.QueryHookOptions<SearchPostQuery, SearchPostQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchPostQuery, SearchPostQueryVariables>(SearchPostDocument, options);
+      }
+export function useSearchPostLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchPostQuery, SearchPostQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchPostQuery, SearchPostQueryVariables>(SearchPostDocument, options);
+        }
+export type SearchPostQueryHookResult = ReturnType<typeof useSearchPostQuery>;
+export type SearchPostLazyQueryHookResult = ReturnType<typeof useSearchPostLazyQuery>;
+export type SearchPostQueryResult = Apollo.QueryResult<SearchPostQuery, SearchPostQueryVariables>;
+export const SearchUserDocument = gql`
+    query SearchUser($query: String!) {
+  searchUser(query: $query) {
+    ...RegularUser
+  }
+}
+    ${RegularUserFragmentDoc}`;
+
+/**
+ * __useSearchUserQuery__
+ *
+ * To run a query within a React component, call `useSearchUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchUserQuery({
+ *   variables: {
+ *      query: // value for 'query'
+ *   },
+ * });
+ */
+export function useSearchUserQuery(baseOptions: Apollo.QueryHookOptions<SearchUserQuery, SearchUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchUserQuery, SearchUserQueryVariables>(SearchUserDocument, options);
+      }
+export function useSearchUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchUserQuery, SearchUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchUserQuery, SearchUserQueryVariables>(SearchUserDocument, options);
+        }
+export type SearchUserQueryHookResult = ReturnType<typeof useSearchUserQuery>;
+export type SearchUserLazyQueryHookResult = ReturnType<typeof useSearchUserLazyQuery>;
+export type SearchUserQueryResult = Apollo.QueryResult<SearchUserQuery, SearchUserQueryVariables>;

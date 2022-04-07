@@ -4,7 +4,7 @@
     "port": 5432,
     "username": "postgres",
     "password": "",
-    "database": "FTS-test",
+    "database": "kyle-board",
     "entities": ["dist/entities/*.js"],
     "migrations": ["dist/migrations/*.js"]
 }

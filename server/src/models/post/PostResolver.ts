@@ -17,8 +17,8 @@ import {
     UseMiddleware,
 } from "type-graphql";
 import { getConnection } from "typeorm";
+import { io } from "../../";
 import { safeUserSelect } from "../../constants";
-import { io } from "../../index";
 import { isAuth } from "../../middleware/IsAuth";
 import { MyContext } from "../../types";
 import { createValidateFileUrlSchema } from "../../utils/createValidateFileUrlSchema";
@@ -41,8 +41,14 @@ export class PostResolver {
 
     @Query(() => PaginatedPosts)
     async posts(
-        @Arg("limit", () => Int) limit: number,
-        @Arg("cursor", () => String, { nullable: true }) cursor: string | null
+        @Arg("limit", () => Int)
+        limit: number,
+
+        @Arg("cursor", () => String, { nullable: true })
+        cursor: string | null,
+
+        @Arg("creatorId", () => Int, { nullable: true })
+        creatorId: number | null
     ): Promise<PaginatedPosts> {
         const realLimit = Math.min(50, limit);
 
@@ -51,6 +57,8 @@ export class PostResolver {
 
         const replacements: any[] = [realLimitPlusOne];
 
+        if (creatorId) replacements.push(creatorId);
+
         //passed in a cursor? then take all posts after the timestamp
         if (cursor) {
             const date = new Date(parseInt(cursor));
@@ -58,19 +66,45 @@ export class PostResolver {
                 replacements.push(new Date(parseInt(cursor)));
         }
 
-        //performing a join between 2 queries, one post and one for the post itself
-        //first line = reference the post table and select all the fields on it
-        //inner join = using public.user b/c we have table conflicts when just using the user table
-        const posts = await getConnection().query(
-            `
+        /*
+            $1 = limit + 1
+            $2 = cursor or creatorId
+            $3 = cursor
+        */
+
+        // there's gotta be a smarter way to do this :/
+        var sql = "";
+        if (cursor && creatorId) {
+            sql = `
             select *
             from post
-            ${cursor ? `where "createdAt" < $2` : ""}
+            where "createdAt" < $3 and "creatorId" = $2
+            order by "createdAt" DESC
+            limit $1`;
+        } else if (creatorId && !cursor) {
+            sql = `
+            select *
+            from post
+            where "creatorId" = $2
+            order by "createdAt" DESC
+            limit $1`;
+        } else if (cursor && !creatorId) {
+            sql = `
+            select *
+            from post
+            where "createdAt" < $2
             order by "createdAt" DESC
             limit $1
-          `,
-            replacements
-        );
+            `;
+        } else {
+            sql = `
+            select *
+            from post
+            order by "createdAt" DESC
+            limit $1`;
+        }
+
+        const posts = await getConnection().query(sql, replacements);
 
         return {
             posts: posts.slice(0, realLimit),
@@ -241,8 +275,22 @@ export class PostResolver {
         // tell everyone we deleted a post
         io.emit(SocketCmds.DeleteMessage, id);
 
-        //delete image here
+        // TODO: delete image here
 
         return true;
+    }
+
+    @Query(() => [Post])
+    async searchPost(
+        @Arg("query", () => String) query: string
+    ): Promise<Post[]> {
+        return getConnection()
+            .createQueryBuilder(Post, "p")
+            .select()
+            .where("post_document @@ plainto_tsquery(:query)", {
+                query,
+            })
+            .orderBy("ts_rank(post_document, plainto_tsquery(:query))", "DESC")
+            .getMany();
     }
 }

@@ -1,0 +1,5 @@
+query FindById($id: Int!) {
+    findById(id: $id) {
+        ...RegularUser
+    }
+}

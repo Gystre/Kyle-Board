@@ -14,6 +14,7 @@ import {
     Resolver,
     Root,
 } from "type-graphql";
+import { getConnection } from "typeorm";
 import { v4 } from "uuid";
 import { COOKIE_NAME, FORGET_PASSWORD_PREFIX, __prod__ } from "../../constants";
 import { MyContext } from "../../types";
@@ -34,6 +35,15 @@ export class UserResolver {
         //make sure user can only see their email and not anyone else's
         if (req.session.userId === user.id) {
             return user.email;
+        }
+
+        return "";
+    }
+
+    @FieldResolver(() => String)
+    password(@Root() user: User, @Ctx() { req }: MyContext) {
+        if (req.session.userId === user.id) {
+            return user.password;
         }
 
         return "";
@@ -296,5 +306,19 @@ export class UserResolver {
         req.session.userId = user.id;
 
         return { user };
+    }
+
+    @Query(() => [User])
+    async searchUser(
+        @Arg("query", () => String) query: string
+    ): Promise<User[]> {
+        return getConnection()
+            .createQueryBuilder(User, "p")
+            .select()
+            .where("user_document @@ plainto_tsquery(:query)", {
+                query,
+            })
+            .orderBy("ts_rank(user_document, plainto_tsquery(:query))", "DESC")
+            .getMany();
     }
 }
