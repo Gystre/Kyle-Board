@@ -33,7 +33,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 
 -   logging out in different tab doesn't logout all tabs
 
-#### Misc
+## Misc
 
 Dump database schema
 
