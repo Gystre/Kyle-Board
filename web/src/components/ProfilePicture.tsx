@@ -1,6 +1,6 @@
-import React from "react";
-import { Avatar, AvatarProps, Box } from "@chakra-ui/react";
+import { Avatar, AvatarProps } from "@chakra-ui/react";
 import NextLink from "next/link";
+import React from "react";
 
 interface ProfilePictureProps extends AvatarProps {
     userId: number;
@@ -18,10 +18,10 @@ export const ProfilePicture: React.FC<ProfilePictureProps> = ({
                 {...props}
                 name={name}
                 src={src}
+                cursor="pointer"
                 _hover={{
                     transition: "all 0.2s ease",
                     filter: "brightness(70%)",
-                    cursor: "pointer",
                 }}
             />
         </NextLink>

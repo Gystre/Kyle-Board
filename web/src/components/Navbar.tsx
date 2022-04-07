@@ -17,9 +17,9 @@ import { useRouter } from "next/router";
 import React from "react";
 import { FiSearch } from "react-icons/fi";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
-import { convertPermission } from "../utils/convertPermission";
 import { isServer } from "../utils/isServer";
 import { useSocket } from "../utils/socket";
+import { LinkName } from "./LinkName";
 import { ProfilePicture } from "./ProfilePicture";
 
 interface Props {}
@@ -58,10 +58,11 @@ export const Navbar: React.FC<Props> = () => {
                     userId={data.me.id}
                 />
                 {window.screen.width > 600 ? (
-                    <>
-                        <Box>{data.me.username}</Box>
-                        {convertPermission(data.me.permissionLevel)}
-                    </>
+                    <LinkName
+                        id={data.me.id}
+                        username={data.me.username}
+                        permissionLevel={data.me.permissionLevel}
+                    />
                 ) : null}
                 <Button
                     onClick={async () => {

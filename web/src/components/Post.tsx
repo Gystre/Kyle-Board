@@ -4,9 +4,9 @@ import React, { useState } from "react";
 import Lightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css"; // This only needs to be imported once in your app
 import { PostResultFragment } from "../generated/graphql";
-import { convertPermission } from "../utils/convertPermission";
 import { convertStringToDate } from "../utils/convertStringToDate";
 import { EditDeletePostButtons } from "./EditDeletePostButtons";
+import { LinkName } from "./LinkName";
 import { ProfilePicture } from "./ProfilePicture";
 
 interface PostProps {
@@ -34,26 +34,12 @@ export const Post: React.FC<PostProps> = ({ post: p, noBorder = false }) => {
                     />
                     <Box ml={3}>
                         <Box>
-                            <NextLink
-                                href="/user/[id]"
-                                as={`/user/${p.creator.id}`}
-                            >
-                                <span
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.textDecoration =
-                                            "underline";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.textDecoration =
-                                            "none";
-                                    }}
-                                >
-                                    <b>{p.creator.username}</b>
-                                    {convertPermission(
-                                        p.creator.permissionLevel
-                                    )}
-                                </span>
-                            </NextLink>
+                            <LinkName
+                                id={p.creator.id}
+                                username={p.creator.username}
+                                permissionLevel={p.creator.permissionLevel}
+                                bold
+                            />
                             <Text color="grey" display="inline">
                                 {" "}
                                 · {convertStringToDate(p.createdAt)}

@@ -6,7 +6,6 @@ import {
     HStack,
     Spinner,
     Stack,
-    useColorModeValue,
 } from "@chakra-ui/react";
 import { NextPage } from "next";
 import NextLink from "next/link";
@@ -58,13 +57,12 @@ const Search: NextPage = () => {
                             borderRadius="md"
                             p={2}
                             cursor="pointer"
+                            _hover={{
+                                transition: "all 0.2s ease",
+                                backgroundColor: "gray.100",
+                            }}
                         >
-                            <Box
-                                rounded={"md"}
-                                maxW={"250px"}
-                                w={"full"}
-                                bg={useColorModeValue("white", "gray.800")}
-                            >
+                            <Box rounded={"md"} maxW={"250px"} w={"full"}>
                                 <Flex justify={"center"}>
                                     <ProfilePicture
                                         userId={u.id}
