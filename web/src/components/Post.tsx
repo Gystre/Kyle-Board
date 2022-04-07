@@ -25,6 +25,10 @@ export const Post: React.FC<PostProps> = ({ post: p, noBorder = false }) => {
                 shadow={noBorder ? "" : "md"}
                 borderWidth={noBorder ? "" : "1px"}
                 borderRadius={noBorder ? "" : "md"}
+                _hover={{
+                    transition: "all 0.2s ease",
+                    backgroundColor: "gray.100",
+                }}
             >
                 <Flex>
                     <ProfilePicture

@@ -2,6 +2,10 @@ import { Avatar, AvatarProps } from "@chakra-ui/react";
 import NextLink from "next/link";
 import React from "react";
 
+/*
+    Component that displays profile picture with link to the user's profile as well as darkening the image on hover
+*/
+
 interface ProfilePictureProps extends AvatarProps {
     userId: number;
 }

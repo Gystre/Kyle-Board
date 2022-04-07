@@ -10,6 +10,12 @@ import { useField } from "formik";
 import { Dispatch, SetStateAction, useRef } from "react";
 import { FiImage } from "react-icons/fi";
 
+/*
+    Component which provides an input for file upload as well as a local image preview.
+    I would like to keep this self contained in a single component but for now, ur gonna need to pass in a state
+    to keep track of the preview image url manually.
+*/
+
 type FileUploadProps = {
     fieldName: string;
     accept?: string;

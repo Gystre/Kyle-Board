@@ -1,6 +1,10 @@
 import { Box } from "@chakra-ui/layout";
 import React from "react";
 
+/*
+    Component to keep things in a mobile friendly format
+*/
+
 //creating a type here b/c we're reusing this in Layout
 export type WrapperVariant = "small" | "regular";
 
@@ -8,7 +12,6 @@ interface Props {
     variant?: WrapperVariant;
 }
 
-//box element in chakra is kind of like a div, can style however you want
 export const Wrapper: React.FC<Props> = ({ children, variant = "regular" }) => {
     return (
         <Box

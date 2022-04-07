@@ -1,4 +1,4 @@
-import { HStack, IconButton, Heading } from "@chakra-ui/react";
+import { Heading, HStack, IconButton } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { FiArrowLeft } from "react-icons/fi";
@@ -6,6 +6,10 @@ import { FiArrowLeft } from "react-icons/fi";
 interface PageHeaderProps {
     title: string;
 }
+
+/*
+    Creates a left arrow button a header containing title of the page.
+*/
 
 export const PageHeader: React.FC<PageHeaderProps> = ({ title }) => {
     const router = useRouter();

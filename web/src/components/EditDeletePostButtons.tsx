@@ -1,13 +1,18 @@
 import { Box, IconButton, useToast } from "@chakra-ui/react";
-import NextLink from "next/link";
-import { useDeletePostMutation, useMeQuery } from "../generated/graphql";
 import { PermissionLevel } from "@kyle/common";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiTrash2 } from "react-icons/fi";
+import { useDeletePostMutation, useMeQuery } from "../generated/graphql";
+
+/*
+    Component which displays buttons for editing and deleting posts.
+    Commented out the edit button for now since i'm too lazy to implement it LOL.
+*/
 
 interface Props {
     id: number;
     creatorId: number;
 }
+
 export const EditDeletePostButtons: React.FC<Props> = ({ id, creatorId }) => {
     const toast = useToast();
     const { data: meData } = useMeQuery();
@@ -40,7 +45,6 @@ export const EditDeletePostButtons: React.FC<Props> = ({ id, creatorId }) => {
                         variables: { id, creatorId },
 
                         //remove the post from the cache so the user doesn't see it anymore
-                        // BUG: doesn't work with posts created with sockets
                         update: (cache, { data }) => {
                             if (data?.deletePost) {
                                 cache.evict({ id: "Post:" + id });

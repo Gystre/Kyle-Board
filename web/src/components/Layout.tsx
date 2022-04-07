@@ -1,10 +1,16 @@
 import Head from "next/head";
 import { Navbar } from "./Navbar";
-import { WrapperVariant, Wrapper } from "./Wrapper";
+import { Wrapper, WrapperVariant } from "./Wrapper";
+
+/*
+    Contains the navbar, wrapper component, and SEO tags.
+    Use this to create a basic page layout.
+*/
 
 interface Props {
     variant?: WrapperVariant;
 }
+
 export const Layout: React.FC<Props> = ({ children, variant }) => {
     return (
         <>
