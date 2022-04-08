@@ -25,7 +25,8 @@ class Nsfw extends Component<NsfwProps> {
                     loading: false,
                 });
 
-                return model.classify(document.getElementById("imgThing"));
+                // return model.classify(document.getElementById("imgThing"));
+                return null;
             })
             .then(function (predictions) {
                 console.log("Predictions: ", predictions);

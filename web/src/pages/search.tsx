@@ -49,7 +49,7 @@ const Search: NextPage = () => {
         searchResult = (
             <HStack spacing={8}>
                 {searchUser.data!.searchUser.map((u) => (
-                    <NextLink href="/user/[id]" as={`/user/${u.id}`}>
+                    <NextLink href="/user/[id]" as={`/user/${u.id}`} key={u.id}>
                         <Center
                             overflowY="auto"
                             shadow="md"

@@ -2,6 +2,7 @@ import { Box, Button, Flex, Spinner, Stack, useToast } from "@chakra-ui/react";
 import { createPostSchema } from "@kyle/common";
 import { Form, Formik } from "formik";
 import type { NextPage } from "next";
+import Image from "next/image";
 import { useState } from "react";
 import { FileUpload } from "../components/FileUpload";
 import { InputField } from "../components/InputField";
@@ -43,9 +44,10 @@ const Home: NextPage = () => {
                     i probs shut down the server so have a picture of one of the
                     greatest inspirations in my life
                 </div>
-                <img
+                <Image
                     width="50%"
                     src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fircenterprises.com%2Fwp-content%2Fuploads%2F2020%2F06%2FDollar-Bill-scaled.jpeg&f=1&nofb=1"
+                    alt="monies"
                 />
                 <div>{error?.message}</div>
             </div>

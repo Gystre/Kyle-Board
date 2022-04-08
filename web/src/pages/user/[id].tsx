@@ -30,18 +30,6 @@ const User: NextPage = () => {
         },
     });
 
-    if (error) {
-        return <div>{error.message}</div>;
-    }
-
-    if (!data?.findById && !loading) {
-        return (
-            <Layout>
-                <Box>Couldn't find user</Box>
-            </Layout>
-        );
-    }
-
     const posts = usePostsQuery({
         variables: {
             limit: 15,
@@ -51,6 +39,18 @@ const User: NextPage = () => {
         notifyOnNetworkStatusChange: true,
         fetchPolicy: "no-cache", // TODO: figure out how to merge new posts while also combining them with the cached posts for more efficient network transfer
     });
+
+    if (error) {
+        return <div>{error.message}</div>;
+    }
+
+    if (!data?.findById && !loading) {
+        return (
+            <Layout>
+                <Box>Couldn&apos;t find user</Box>
+            </Layout>
+        );
+    }
 
     return (
         <Layout>
@@ -67,10 +67,10 @@ const User: NextPage = () => {
                 {convertPermission(data?.findById?.permissionLevel as number)}
             </Heading>
             <Text>
-                I'm too lazy to implement a description feature so have a filler
-                description instead heheh. This guy is a total idiot whoever
-                this profile belongs too except for kyle's tho, his is very
-                cool.
+                I&apos;m too lazy to implement a description feature so have a
+                filler description instead heheh. This guy is a total idiot
+                whoever this profile belongs too except for kyle&apos;s tho, his
+                is very cool.
             </Text>
 
             <Divider my={2} />

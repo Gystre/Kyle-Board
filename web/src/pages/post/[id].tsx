@@ -1,7 +1,6 @@
-import { Box, Heading, HStack, IconButton, Spinner } from "@chakra-ui/react";
+import { Box, Spinner } from "@chakra-ui/react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { FiArrowLeft } from "react-icons/fi";
 import { Layout } from "../../components/Layout";
 import { PageHeader } from "../../components/PageHeader";
 import { Post as PostComponent } from "../../components/Post";
@@ -34,7 +33,7 @@ const Post: NextPage = () => {
     if (!data?.post) {
         return (
             <Layout>
-                <Box>Couldn't find post</Box>
+                <Box>Couldn&apos;t find post</Box>
             </Layout>
         );
     }

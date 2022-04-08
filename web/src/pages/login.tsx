@@ -33,7 +33,7 @@ export const Login: React.FC<{}> = () => {
                 isClosable: true,
             });
         }
-    }, []);
+    });
 
     return (
         <Layout variant="small">

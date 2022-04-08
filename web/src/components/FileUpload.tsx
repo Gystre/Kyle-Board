@@ -4,6 +4,7 @@ import {
     FormControl,
     FormErrorMessage,
     IconButton,
+    Image,
 } from "@chakra-ui/react";
 import { MAX_FILE_SIZE_MB } from "@kyle/common";
 import { useField } from "formik";
@@ -105,10 +106,11 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                     </Box>
                 </Box>
             ) : null}
-            <img
+            <Image
                 ref={(e) => (imgRef.current = e)}
                 id="preview-image"
                 src={previewSrc ? previewSrc : ""}
+                alt="image preview"
             />
         </FormControl>
     );
