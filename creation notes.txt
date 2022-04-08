@@ -82,5 +82,8 @@ yarn add formik
 //sockets
 yarn add socket.io-client
 
-//icons, i really be out here installing a whole ass package just for an icon
+//various icons
 yarn add react-icons
+
+//nsfw detection model
+yarn add @tensorflow/tfjs nsfwjs

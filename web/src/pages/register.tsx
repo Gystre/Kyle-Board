@@ -1,14 +1,14 @@
-import { Box, Button, Heading, Input, Link, Text } from "@chakra-ui/react";
-import { Formik, Form } from "formik";
-import { useRouter } from "next/router";
-import { Wrapper } from "../components/Wrapper";
-import { useRegisterMutation, MeQuery, MeDocument } from "../generated/graphql";
-import { toErrorMap } from "../utils/toErrorMap";
-import { withApollo } from "../utils/withApollo";
+import { Box, Button, Heading, Link, Text } from "@chakra-ui/react";
 import { createRegisterSchema } from "@kyle/common";
+import { Form, Formik } from "formik";
 import NextLink from "next/link";
+import { useRouter } from "next/router";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
+import WithSpeechBubbles from "../components/WithSpeechBubbles";
+import { MeDocument, MeQuery, useRegisterMutation } from "../generated/graphql";
+import { toErrorMap } from "../utils/toErrorMap";
+import { withApollo } from "../utils/withApollo";
 
 export const Register: React.FC<{}> = () => {
     //used to redirect user
@@ -91,6 +91,7 @@ export const Register: React.FC<{}> = () => {
                     <Link color="teal.500">login now</Link>
                 </NextLink>
             </Text>
+            <WithSpeechBubbles />
         </Layout>
     );
 };

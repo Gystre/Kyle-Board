@@ -2,7 +2,7 @@ import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import React, { useState } from "react";
 import Lightbox from "react-image-lightbox";
-import "react-image-lightbox/style.css"; // This only needs to be imported once in your app
+import "react-image-lightbox/style.css";
 import { PostResultFragment } from "../generated/graphql";
 import { convertStringToDate } from "../utils/convertStringToDate";
 import { EditDeletePostButtons } from "./EditDeletePostButtons";
@@ -16,6 +16,7 @@ interface PostProps {
 
 export const Post: React.FC<PostProps> = ({ post: p, noBorder = false }) => {
     const [isOpen, setIsOpen] = useState<boolean>();
+    // const isNsfw = useNsfw(p.fileUrl as string);
 
     return (
         <NextLink href="/post/[id]" as={`/post/${p.id}`}>
@@ -68,6 +69,7 @@ export const Post: React.FC<PostProps> = ({ post: p, noBorder = false }) => {
                         }}
                         style={{ display: "block", margin: "auto" }}
                     >
+                        {/* <Nsfw imageUrl={p.fileUrl} /> */}
                         <Image
                             mt={3}
                             display="block"
