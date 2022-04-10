@@ -43,6 +43,7 @@ const Home: NextPage = () => {
     const [signB2] = useSignB2Mutation();
 
     const [previewSrc, setPreviewSrc] = useState<any | null>(null);
+    console.log("yo");
 
     if (!loading && !data) {
         return (
