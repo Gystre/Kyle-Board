@@ -110,7 +110,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                 ref={(e) => (imgRef.current = e)}
                 id="preview-image"
                 src={previewSrc ? previewSrc : ""}
-                alt="image preview"
+                alt=""
             />
         </FormControl>
     );
