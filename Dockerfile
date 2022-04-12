@@ -18,7 +18,7 @@ COPY server server
 COPY common common
 
 # production environment vars -> .env
-COPY server/.env .env 
+# COPY server/.env .env 
 COPY server/.env.example .env.example
 
 # replace ormconfig.json with docker specific vars
