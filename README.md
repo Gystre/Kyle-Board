@@ -17,7 +17,6 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   rate limit searchs
 -   press tab in url to auto search (like in twitter.com and jisho.org)
 -   test overflow for profile picture search results
--   lightbox for profile pictures
 -   upload custom profile picture
 
 ## Done
@@ -34,6 +33,9 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   logging out in different tab doesn't logout all tabs
 
 ## Misc
+
+-   argon2 v0.28 on docker requires GLIBC_2.25 and docker doesn't have that installed? Sticking with v0.27.2 for now
+-   cookies won't work when testing docker containers locally (intentional behavior but maybe doesn't have to be? don't know)
 
 Dump database schema
 

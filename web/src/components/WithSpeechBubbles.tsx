@@ -47,7 +47,7 @@ const TestimonialContent = ({ children }: { children: ReactNode }) => {
 
 const TestimonialHeading = ({ children }: { children: ReactNode }) => {
     return (
-        <Heading as={"h3"} fontSize={"xl"}>
+        <Heading as={"h3"} fontSize={"xl"} textAlign="center">
             {children}
         </Heading>
     );

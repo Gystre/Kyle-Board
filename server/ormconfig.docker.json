@@ -1,9 +1,9 @@
 {
     "type": "postgres",
-    "host": "localhost",
+    "host": "db",
     "port": 5432,
     "username": "postgres",
-    "password": "",
+    "password": "postgres",
     "database": "kyle-board",
     "entities": ["dist/models/**/*Entity.js"],
     "migrations": ["dist/migrations/*.js"]

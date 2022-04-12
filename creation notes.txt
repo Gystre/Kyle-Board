@@ -42,7 +42,7 @@ yarn add typeorm
 yarn add apollo-server-express
 
 //passwords
-yarn add argon2
+yarn add argon2@0.27.2
 
 //emails
 yarn add nodemailer, uuid
