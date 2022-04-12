@@ -5,13 +5,14 @@
     "main": "index.js",
     "scripts": {
         "dev": "nodemon dist/index.js",
+        "build": "tsc",
         "watch": "tsc -w",
         "createMigration": "npx typeorm migration:generate -n migration",
         "test": "echo \"Error: no test specified\" && exit 1",
         "gen-env": "gen-env-types .env -o src/env.d.ts -e ."
     },
     "keywords": [],
-    "author": "",
+    "author": "Kyle Yu",
     "license": "ISC",
     "devDependencies": {
         "@types/backblaze-b2": "^1.5.1",
@@ -29,7 +30,7 @@
     "dependencies": {
         "@kyle/common": "1.0.0",
         "apollo-server-express": "^3.6.2",
-        "argon2": "^0.28.5",
+        "argon2": "0.27.2",
         "backblaze-b2": "^1.7.0",
         "class-validator": "^0.13.2",
         "connect-redis": "^6.1.0",

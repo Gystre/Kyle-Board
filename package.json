@@ -4,5 +4,9 @@
         "web",
         "server",
         "common"
-    ]
+    ],
+    "scripts": {
+        "build:server": "yarn workspace server build",
+        "build:common": "yarn workspace @kyle/common build"
+    }
 }

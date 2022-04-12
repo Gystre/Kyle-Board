@@ -20,17 +20,32 @@ import { createUserLoader } from "./utils/createUserLoader";
 export var io: IoServer;
 
 const main = async () => {
-    //create db connection for typeorm
-    await createConnection({
-        type: "postgres",
-        url: process.env.DATABASE_URL,
-        logging: true,
-        // synchronize: true, //create the tables automatically without running a migration (keeping this off cuz deletes indices and ts_vectors)
-        migrations: [path.join(__dirname, "./migrations/*")],
-        entities: [User, Post], //MAKE SURE TO ADD ANY NEW ENTITIES HERE
-    });
+    let retries = 5;
+    while (retries) {
+        try {
+            //create db connection for typeorm
+            const connection = await createConnection({
+                type: "postgres",
+                database: "kyle-board",
+                username: "postgres",
+                password: __prod__ ? "postgres" : process.env.POSTGRES_PASSWORD,
+                host: __prod__ ? process.env.PROD_DB_HOST : "localhost",
+                logging: true,
+                // synchronize: true, //create the tables automatically without running a migration (keeping this off cuz deletes indices and ts_vectors)
+                migrations: [path.join(__dirname, "./migrations/*")],
+                entities: [User, Post], //MAKE SURE TO ADD ANY NEW ENTITIES HERE
+            });
+            connection.runMigrations();
+            break;
+        } catch (err) {
+            console.log(err);
+            retries -= 1;
+            console.log("retries left: " + retries);
 
-    // connection.runMigrations();
+            // wait for second
+            await new Promise((res) => setTimeout(res, 5000));
+        }
+    }
 
     //create an instance of express
     const app = express();
@@ -38,7 +53,9 @@ const main = async () => {
     //initialize the redis session (for saving browser cookies and stuff so user can stay logged in after refreshing the page)
     //this needs to come before apollo middle ware b/c we're going to be using this inside of apollo
     const RedisStore = connectRedis(session);
-    const redis = new Redis(process.env.REDIS_URL);
+    const redis = new Redis({
+        host: __prod__ ? process.env.PROD_REDIS_HOST : process.env.REDIS_HOST,
+    });
 
     //tell express we have a proxy sitting in front so cookies and sessions work
     app.set("trust proxy", 1);
@@ -115,12 +132,10 @@ const main = async () => {
     });
 
     //start the server
-    const httpServer = app.listen(parseInt(process.env.PORT), async () => {
-        /*
-            select * from post inner join public."user" on post."creatorId" = public."user".id 
-            where post_document @@ plainto_tsquery('saist nah') or user_document @@ plainto_tsquery('saist nah')
-            order by ts_rank(post_document, plainto_tsquery('saist nah')) desc
-        */
+    const port = __prod__
+        ? (process.env.PROD_PORT as string)
+        : process.env.PORT;
+    const httpServer = app.listen(parseInt(port), async () => {
         /*
             Streamline this process by creating helper functions that auto generate these statements for me
             all i need to do is pass the table and indexable columns. Then again there are probs way better solutions
@@ -148,9 +163,7 @@ const main = async () => {
 
             console.log("created the indices");
         }
-        console.log(
-            "Kyle Board server started on localhost:" + process.env.PORT
-        );
+        console.log("Kyle Board server started on localhost:" + port);
     });
 
     //stick on the socket.io stuff
