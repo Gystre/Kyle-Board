@@ -11,3 +11,5 @@
 9. push commit to auto build + deploy
 
 # Backend
+
+1. set heroku app's stack to container: `heroku stack:set container --app kyle-board`
