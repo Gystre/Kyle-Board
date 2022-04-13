@@ -23,13 +23,20 @@ const main = async () => {
     let retries = 5;
     while (retries) {
         try {
+            console.log("heroku pg: " + process.env.DATABASE_URL);
+
             //create db connection for typeorm
             const connection = await createConnection({
+                url: __prod__
+                    ? process.env.DATABASE_URL
+                    : process.env.LOCAL_DATABASE_URL,
+                // for docker stuff
+                // database: "kyle-board",
+                // username: "postgres",
+                // password: __prod__ ? "postgres" : process.env.POSTGRES_PASSWORD,
+                // host: __prod__ ? process.env.PROD_DB_HOST : "localhost",
+
                 type: "postgres",
-                database: "kyle-board",
-                username: "postgres",
-                password: __prod__ ? "postgres" : process.env.POSTGRES_PASSWORD,
-                host: __prod__ ? process.env.PROD_DB_HOST : "localhost",
                 logging: true,
                 // synchronize: true, //create the tables automatically without running a migration (keeping this off cuz deletes indices and ts_vectors)
                 migrations: [path.join(__dirname, "./migrations/*")],
@@ -54,7 +61,7 @@ const main = async () => {
     //this needs to come before apollo middle ware b/c we're going to be using this inside of apollo
     const RedisStore = connectRedis(session);
     const redis = new Redis({
-        host: __prod__ ? process.env.PROD_REDIS_HOST : process.env.REDIS_HOST,
+        host: __prod__ ? process.env.REDIS_URL : process.env.LOCAL_REDIS_URL,
     });
 
     //tell express we have a proxy sitting in front so cookies and sessions work
