@@ -3,7 +3,7 @@ declare global {
     interface ProcessEnv {
       LOCAL_DATABASE_URL: string;
       LOCAL_REDIS_URL: string;
-      PORT: string;
+      LOCAL_PORT: string;
       SESSION_SECRET: string;
       CORS_ORIGIN: string;
       GMAIL_USERNAME: string;

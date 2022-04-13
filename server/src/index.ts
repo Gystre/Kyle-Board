@@ -140,8 +140,8 @@ const main = async () => {
 
     //start the server
     const port = __prod__
-        ? (process.env.PROD_PORT as string)
-        : process.env.PORT;
+        ? (process.env.PORT as string)
+        : process.env.LOCAL_PORT;
     const httpServer = app.listen(parseInt(port), async () => {
         /*
             Streamline this process by creating helper functions that auto generate these statements for me
