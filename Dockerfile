@@ -18,6 +18,7 @@ COPY server server
 COPY common common
 
 # production environment vars -> .env
+# set inside heroku config vars
 # COPY server/.env .env 
 COPY server/.env.example .env.example
 

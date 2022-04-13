@@ -1,8 +1,8 @@
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
-      POSTGRES_PASSWORD: string;
-      REDIS_HOST: string;
+      LOCAL_DATABASE_URL: string;
+      LOCAL_REDIS_URL: string;
       PORT: string;
       SESSION_SECRET: string;
       CORS_ORIGIN: string;
