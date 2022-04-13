@@ -60,9 +60,9 @@ const main = async () => {
     //initialize the redis session (for saving browser cookies and stuff so user can stay logged in after refreshing the page)
     //this needs to come before apollo middle ware b/c we're going to be using this inside of apollo
     const RedisStore = connectRedis(session);
-    const redis = new Redis({
-        host: __prod__ ? process.env.REDIS_URL : process.env.LOCAL_REDIS_URL,
-    });
+    const redis = new Redis(
+        __prod__ ? process.env.REDIS_URL : process.env.LOCAL_REDIS_URL
+    );
 
     //tell express we have a proxy sitting in front so cookies and sessions work
     app.set("trust proxy", 1);
