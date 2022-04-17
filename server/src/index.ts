@@ -71,8 +71,11 @@ const main = async () => {
     app.use(
         cors({
             origin: [
-                process.env.CORS_ORIGIN,
+                __prod__
+                    ? process.env.LOCAL_CORS_ORIGIN
+                    : (process.env.CORS_ORIGIN as string),
                 "https://studio.apollographql.com",
+                "https://kyle-reddit.vercel.app/",
             ],
             methods: ["GET", "POST"],
             credentials: true,

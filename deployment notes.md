@@ -12,4 +12,10 @@
 
 # Backend
 
+Set these environment vars in heroku:
+
+-   REDIS_URL (auto created w/ redis addon)
+-   DATABASE_URL (auto created w/ postgres addon)
+-   CORS_ORIGIN
+
 1. set heroku app's stack to container: `heroku stack:set container --app kyle-board`
