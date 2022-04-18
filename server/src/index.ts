@@ -36,6 +36,7 @@ const main = async () => {
                 // password: __prod__ ? "postgres" : process.env.POSTGRES_PASSWORD,
                 // host: __prod__ ? process.env.PROD_DB_HOST : "localhost",
 
+                ssl: true,
                 type: "postgres",
                 logging: true,
                 // synchronize: true, //create the tables automatically without running a migration (keeping this off cuz deletes indices and ts_vectors)
