@@ -23,8 +23,6 @@ const main = async () => {
     let retries = 5;
     while (retries) {
         try {
-            console.log("heroku pg: " + process.env.DATABASE_URL);
-
             //create db connection for typeorm
             const connection = await createConnection({
                 url: __prod__
@@ -43,7 +41,7 @@ const main = async () => {
                 migrations: [path.join(__dirname, "./migrations/*")],
                 entities: [User, Post], //MAKE SURE TO ADD ANY NEW ENTITIES HERE
             });
-            connection.runMigrations();
+            // connection.runMigrations();
             break;
         } catch (err) {
             console.log(err);
