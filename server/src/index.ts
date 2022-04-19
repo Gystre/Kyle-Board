@@ -23,8 +23,6 @@ const main = async () => {
     let retries = 5;
     while (retries) {
         try {
-            console.log("heroku pg: " + process.env.DATABASE_URL);
-
             //create db connection for typeorm
             const connection = await createConnection({
                 url: __prod__
@@ -36,13 +34,14 @@ const main = async () => {
                 // password: __prod__ ? "postgres" : process.env.POSTGRES_PASSWORD,
                 // host: __prod__ ? process.env.PROD_DB_HOST : "localhost",
 
+                ssl: true,
                 type: "postgres",
                 logging: true,
                 // synchronize: true, //create the tables automatically without running a migration (keeping this off cuz deletes indices and ts_vectors)
                 migrations: [path.join(__dirname, "./migrations/*")],
                 entities: [User, Post], //MAKE SURE TO ADD ANY NEW ENTITIES HERE
             });
-            connection.runMigrations();
+            // connection.runMigrations();
             break;
         } catch (err) {
             console.log(err);
@@ -60,9 +59,9 @@ const main = async () => {
     //initialize the redis session (for saving browser cookies and stuff so user can stay logged in after refreshing the page)
     //this needs to come before apollo middle ware b/c we're going to be using this inside of apollo
     const RedisStore = connectRedis(session);
-    const redis = new Redis({
-        host: __prod__ ? process.env.REDIS_URL : process.env.LOCAL_REDIS_URL,
-    });
+    const redis = new Redis(
+        __prod__ ? process.env.REDIS_URL : process.env.LOCAL_REDIS_URL
+    );
 
     //tell express we have a proxy sitting in front so cookies and sessions work
     app.set("trust proxy", 1);
@@ -71,8 +70,11 @@ const main = async () => {
     app.use(
         cors({
             origin: [
-                process.env.CORS_ORIGIN,
+                __prod__
+                    ? process.env.LOCAL_CORS_ORIGIN
+                    : (process.env.CORS_ORIGIN as string),
                 "https://studio.apollographql.com",
+                "https://kyle-reddit.vercel.app/",
             ],
             methods: ["GET", "POST"],
             credentials: true,
@@ -140,8 +142,8 @@ const main = async () => {
 
     //start the server
     const port = __prod__
-        ? (process.env.PROD_PORT as string)
-        : process.env.PORT;
+        ? (process.env.PORT as string)
+        : process.env.LOCAL_PORT;
     const httpServer = app.listen(parseInt(port), async () => {
         /*
             Streamline this process by creating helper functions that auto generate these statements for me
