@@ -41,7 +41,7 @@ const main = async () => {
                 migrations: [path.join(__dirname, "./migrations/*")],
                 entities: [User, Post], //MAKE SURE TO ADD ANY NEW ENTITIES HERE
             });
-            // connection.runMigrations();
+            connection.runMigrations();
             break;
         } catch (err) {
             console.log(err);
