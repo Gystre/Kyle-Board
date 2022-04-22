@@ -6,7 +6,6 @@ Live board messaging thing. Using this project to experiment with integrating mo
 
 -   anti nsfw (ml stuff and other libraries)
 -   oauth? (if it's free)
--   CI/CD (github actions to docker build on pc and pull on vm)
 -   anti spam and ddos (cloudflare, hcaptcha, and server ratelimits)
 -   load balancing (docker swarm)
 
@@ -27,6 +26,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   image uploading (backblaze)
 -   lightbox preview for images (probs just stick in a prebuilt package or smthn)
 -   FTS (postgres)
+-   CI/CD (auto deploy dockerfile via github integration in heroku)
 
 ## Bugs
 
