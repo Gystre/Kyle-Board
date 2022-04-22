@@ -10,6 +10,10 @@
 8. add `NEXT_PUBLIC_API_URL` with value `https://api.kylegodly.com/graphql`
 9. push commit to auto build + deploy
 
+# Notes
+- make sure that namecheap or wherever you registered ur domain uses the vercel NAMESPACES not the A record so that redirecting from kylegodly.com -> www.kylegodly.com works
+
+
 # Backend
 
 Set these environment vars in heroku:
@@ -19,3 +23,4 @@ Set these environment vars in heroku:
 -   CORS_ORIGIN
 
 1. set heroku app's stack to container: `heroku stack:set container --app kyle-board`
+
