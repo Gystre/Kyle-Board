@@ -34,7 +34,7 @@ const main = async () => {
                 // password: __prod__ ? "postgres" : process.env.POSTGRES_PASSWORD,
                 // host: __prod__ ? process.env.PROD_DB_HOST : "localhost",
 
-                ssl: true,
+                ssl: { rejectUnauthorized: false },
                 type: "postgres",
                 logging: true,
                 // synchronize: true, //create the tables automatically without running a migration (keeping this off cuz deletes indices and ts_vectors)
@@ -67,15 +67,26 @@ const main = async () => {
     app.set("trust proxy", 1);
 
     //apply cors middleware to all routes (pages)
+    const allowedOrigins = [
+        process.env.LOCAL_CORS_ORIGIN,
+        process.env.CORS_ORIGIN as string,
+        "https://www.kylegodly.com",
+        "https://studio.apollographql.com",
+        "https://kyle-board.vercel.app",
+        "https://kyle-board-git-production-gystre.vercel.app",
+        "https://kyle-board-gystre.vercel.app",
+    ];
+
     app.use(
         cors({
-            origin: [
-                __prod__
-                    ? process.env.LOCAL_CORS_ORIGIN
-                    : (process.env.CORS_ORIGIN as string),
-                "https://studio.apollographql.com",
-                "https://kyle-reddit.vercel.app/",
-            ],
+            origin: function (origin, callback) {
+                if (allowedOrigins.indexOf(origin as string) !== -1) {
+                    callback(null, true);
+                } else {
+                    callback(new Error(origin + " is not allowed by CORS"));
+                }
+            },
+
             methods: ["GET", "POST"],
             credentials: true,
         })
@@ -97,10 +108,13 @@ const main = async () => {
             // sameSite: "none",
 
             maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //10 years
-            httpOnly: true, //make sure cookie only available on serverside
+            httpOnly: true, //make sure cookie only available on serverside, client will not be able to read it
             sameSite: "lax", //protect csrf
             secure: __prod__, //cookie only works in https
-            domain: __prod__ ? ".kylegodly.com" : undefined, //need to add domain b/c sometimes server doesn't always forward cookie correctly
+            // FUTURE KYLE:
+            // need to host server on api.kylegodly.com in order to set a cookie
+            // not able to set cookies from different domains
+            domain: __prod__ ? "kyle-board.herokuapp.com/" : undefined, //need to add domain b/c sometimes server doesn't always forward cookie correctly
         },
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET,
@@ -179,7 +193,10 @@ const main = async () => {
     io = new IoServer(httpServer, {
         cookie: true,
         cors: {
-            origin: process.env.CORS_ORIGIN,
+            origin: __prod__
+                ? process.env.CORS_ORIGIN
+                : process.env.LOCAL_CORS_ORIGIN,
+            // need to allow whitelist https://socket.io/docs/v3/handling-cors/
             methods: ["GET", "POST"],
             credentials: true,
         },

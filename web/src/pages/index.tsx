@@ -70,6 +70,8 @@ const Home: NextPage = () => {
                         validationSchema={createPostSchema}
                         initialValues={{ text: "", file: null as File | null }}
                         onSubmit={async (values, { setErrors }) => {
+                            // SOMEWHERE HERE I NEED TO CATCH ERROR OF NOT AUTHENTICATED (fix later probably)
+
                             // file was added, get upload url and send post request
                             var newFileName = null;
                             if (values.file) {
