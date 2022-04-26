@@ -69,7 +69,7 @@ const main = async () => {
     //apply cors middleware to all routes (pages)
     var allowedOrigins = [
         process.env.LOCAL_CORS_ORIGIN,
-        "http://localhost:4000",
+        "http://localhost:" + process.env.LOCAL_PORT,
         "https://www.kylegodly.com",
         "https://kyle-board.vercel.app",
         "https://kyle-board-git-production-gystre.vercel.app",
@@ -77,9 +77,7 @@ const main = async () => {
         "https://kyle-board.herokuapp.com/",
     ];
     // this thing only availabie in prod
-    if (process.env.CORS_ORIGIN) {
-        allowedOrigins.push(process.env.CORS_ORIGIN);
-    }
+    if (process.env.CORS_ORIGIN) allowedOrigins.push(process.env.CORS_ORIGIN);
 
     app.use(
         cors({
