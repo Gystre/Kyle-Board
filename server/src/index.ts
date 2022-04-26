@@ -34,14 +34,14 @@ const main = async () => {
                 // password: __prod__ ? "postgres" : process.env.POSTGRES_PASSWORD,
                 // host: __prod__ ? process.env.PROD_DB_HOST : "localhost",
 
-                ssl: { rejectUnauthorized: false },
+                ssl: __prod__ ? { rejectUnauthorized: false } : false,
                 type: "postgres",
                 logging: true,
                 // synchronize: true, //create the tables automatically without running a migration (keeping this off cuz deletes indices and ts_vectors)
                 migrations: [path.join(__dirname, "./migrations/*")],
                 entities: [User, Post], //MAKE SURE TO ADD ANY NEW ENTITIES HERE
             });
-            connection.runMigrations();
+            await connection.runMigrations();
             break;
         } catch (err) {
             console.log(err);
@@ -67,24 +67,30 @@ const main = async () => {
     app.set("trust proxy", 1);
 
     //apply cors middleware to all routes (pages)
-    const allowedOrigins = [
+    var allowedOrigins = [
         process.env.LOCAL_CORS_ORIGIN,
-        process.env.CORS_ORIGIN as string,
+        "http://localhost:4000",
         "https://www.kylegodly.com",
-        "https://studio.apollographql.com",
         "https://kyle-board.vercel.app",
         "https://kyle-board-git-production-gystre.vercel.app",
         "https://kyle-board-gystre.vercel.app",
+        "https://kyle-board.herokuapp.com/",
     ];
+    // this thing only availabie in prod
+    if (process.env.CORS_ORIGIN) {
+        allowedOrigins.push(process.env.CORS_ORIGIN);
+    }
 
     app.use(
         cors({
             origin: function (origin, callback) {
-                if (allowedOrigins.indexOf(origin as string) !== -1) {
-                    callback(null, true);
-                } else {
-                    callback(new Error(origin + " is not allowed by CORS"));
-                }
+                console.log("attempted access from ", origin);
+
+                // if (allowedOrigins.indexOf(origin as string) !== -1) {
+                callback(null, true);
+                // } else {
+                //     callback(new Error(origin + " is not allowed by CORS"));
+                // }
             },
 
             methods: ["GET", "POST"],
@@ -111,10 +117,7 @@ const main = async () => {
             httpOnly: true, //make sure cookie only available on serverside, client will not be able to read it
             sameSite: "lax", //protect csrf
             secure: __prod__, //cookie only works in https
-            // FUTURE KYLE:
-            // need to host server on api.kylegodly.com in order to set a cookie
-            // not able to set cookies from different domains
-            domain: __prod__ ? "kyle-board.herokuapp.com/" : undefined, //need to add domain b/c sometimes server doesn't always forward cookie correctly
+            domain: __prod__ ? ".kylegodly.com/" : undefined, //need to add domain b/c sometimes server doesn't always forward cookie correctly
         },
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET,

@@ -12,7 +12,7 @@
 
 # Backend
 
-`heroku logs --tail`
+`heroku logs --tail -a kyle-board`
 
 Set these environment vars in heroku:
 
