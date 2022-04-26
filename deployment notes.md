@@ -7,8 +7,7 @@
 5. go to settings and set root directory as `web`
 6. go to environment variables
 7. add `NEXT_PUBLIC_SERVER_URL` with value `https://kylegodly.com/`
-8. add `NEXT_PUBLIC_API_URL` with value `https://api.kylegodly.com/graphql`
-9. push commit to auto build + deploy
+8. push commit to auto build + deploy
 
 # Backend
 
@@ -24,6 +23,7 @@ Set these environment vars in heroku:
 1. go into `server/index.ts` and inside `app.use` change cors urls to urls that point to server
 2. set heroku app's stack to container: `heroku stack:set container --app kyle-board`
 3. go to addons and add heroku-postgresql and heroku-redis
+4. add `https://api.kylegodly.com` to custom domains
 
 ## while github heroku integration is down
 
