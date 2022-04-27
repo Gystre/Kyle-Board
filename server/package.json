@@ -28,6 +28,7 @@
         "typescript": "^4.5.5"
     },
     "dependencies": {
+        "@hcaptcha/react-hcaptcha": "^1.2.0",
         "@kyle/common": "1.0.0",
         "apollo-server-express": "^3.6.2",
         "argon2": "0.27.2",

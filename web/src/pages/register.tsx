@@ -1,8 +1,10 @@
 import { Box, Button, Heading, Link, Text } from "@chakra-ui/react";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { createRegisterSchema } from "@kyle/common";
 import { Form, Formik } from "formik";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import WithSpeechBubbles from "../components/WithSpeechBubbles";
@@ -13,7 +15,16 @@ import { withApollo } from "../utils/withApollo";
 export const Register: React.FC<{}> = () => {
     //used to redirect user
     const router = useRouter();
+    const [token, setToken] = useState<string | null>(null);
     const [register] = useRegisterMutation();
+
+    const onExpire = () => {
+        console.log("hCaptcha Token Expired");
+    };
+
+    const onError = (err: any) => {
+        console.log(`hCaptcha Error: ${err}`);
+    };
 
     return (
         <Layout variant="small">
@@ -78,7 +89,20 @@ export const Register: React.FC<{}> = () => {
                             type="password"
                             onChange={handleChange}
                         />
+                        <Box mt={4} />
+                        <HCaptcha
+                            sitekey={
+                                process.env
+                                    .NEXT_PUBLIC_HCAPTCHA_SITEKEY as string
+                            }
+                            onVerify={(token, ekey) => {
+                                console.log(token, ekey);
 
+                                setToken(token);
+                            }}
+                            onError={onError}
+                            onExpire={onExpire}
+                        />
                         <Button mt={4} type="submit" isLoading={isSubmitting}>
                             Register
                         </Button>
