@@ -1,7 +1,7 @@
 import { Box, Button } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import { useForgotPasswordMutation } from "../generated/graphql";
@@ -13,7 +13,7 @@ const ForgotPassword: React.FC<{}> = ({}) => {
     const [forgotPassword] = useForgotPasswordMutation();
 
     return (
-        <Layout>
+        <Layout pageName="Forgot Password">
             <Formik
                 initialValues={{ email: "" }}
                 onSubmit={async (values) => {

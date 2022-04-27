@@ -2,24 +2,24 @@
 
 Live board messaging thing. Using this project to experiment with integrating more complex backend systems (scale out, load balancing, ddos mitigation, etc.) which means the front end is going to be relatively basic.
 
-## Todo
+## Todo ❌
 
 -   anti nsfw (ml stuff and other libraries)
 -   oauth? (if it's free)
 -   CI/CD (github actions to docker build on pc and pull on vm)
--   anti spam and ddos (cloudflare, hcaptcha, and server ratelimits)
+-   anti spam and ddos (cloudflare ✔️, hcaptcha ❌, and server ratelimits [express probs handles this] ❌)
 -   load balancing (docker swarm)
 
-## Lower Priority Todo (i.e. fix in next project lol)
+## Lower Priority Todo (i.e. fix in next project lol) ⚠️
 
--   find a way to cache images to local storage, resetStore() refetches ALL images which kills my limits on backblaze (not sure where this happens in the stack, nextjs frontend maybe?)
+-   find a way to cache images to local storage, resetStore() refetches ALL images which kills my limits on backblaze (not sure where this happens in the stack, nextjs frontend or cloudflare cdn or maybe browser level local storage?)
 -   paginate search results
 -   rate limit searchs
 -   press tab in url to auto search (like in twitter.com and jisho.org)
 -   test overflow for profile picture search results
 -   upload custom profile picture
 
-## Done
+## Done ✔️
 
 -   live updates (socket io)
 -   standardize input validation on backend (dunno figure out smthn lol) (ended up using yup)

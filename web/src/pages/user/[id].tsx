@@ -53,7 +53,7 @@ const User: NextPage = () => {
     }
 
     return (
-        <Layout>
+        <Layout pageName={data?.findById?.username}>
             <PageHeader title="User" />
 
             <Avatar

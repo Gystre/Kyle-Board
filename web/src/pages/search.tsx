@@ -96,7 +96,7 @@ const Search: NextPage = () => {
     }
 
     return (
-        <Layout>
+        <Layout pageName="Search">
             <PageHeader title="Search" />
 
             {searchResult && postResult ? (
