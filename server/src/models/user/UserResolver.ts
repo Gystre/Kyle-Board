@@ -235,7 +235,7 @@ export class UserResolver {
 
         const domain = __prod__
             ? "https://kylegodly.com"
-            : process.env.CORS_ORIGIN;
+            : process.env.LOCAL_CORS_ORIGIN;
         await sendEmail(
             email,
             `

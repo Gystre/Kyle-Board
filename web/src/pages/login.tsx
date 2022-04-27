@@ -36,7 +36,7 @@ export const Login: React.FC<{}> = () => {
     });
 
     return (
-        <Layout variant="small">
+        <Layout variant="small" pageName="Login">
             <Heading fontSize="xl">Login</Heading>
             <Text mb="3">haha loser</Text>
             <Formik

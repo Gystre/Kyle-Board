@@ -40,7 +40,9 @@ export const EditDeletePostButtons: React.FC<Props> = ({ id, creatorId }) => {
                 ml="auto"
                 icon={<FiTrash2 />}
                 aria-label="Delete Post"
-                onClick={() => {
+                _hover={{ backgroundColor: "red" }}
+                onClick={(e) => {
+                    e.preventDefault();
                     deletePost({
                         variables: { id, creatorId },
 
