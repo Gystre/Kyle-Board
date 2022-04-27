@@ -115,7 +115,7 @@ const main = async () => {
             httpOnly: true, //make sure cookie only available on serverside, client will not be able to read it
             sameSite: "lax", //protect csrf
             secure: __prod__, //cookie only works in https
-            domain: __prod__ ? ".kylegodly.com/" : undefined, //need to add domain b/c sometimes server doesn't always forward cookie correctly
+            // domain: __prod__ ? "api.kylegodly.com/" : undefined, //need to add domain b/c sometimes server doesn't always forward cookie correctly
         },
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET,
