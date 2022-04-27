@@ -53,7 +53,11 @@ const User: NextPage = () => {
     }
 
     return (
-        <Layout pageName={data?.findById?.username}>
+        <Layout
+            pageName={data?.findById?.username}
+            imageUrl={data?.findById?.imageUrl}
+            description={"some registered user on kyle board i dunno lol"}
+        >
             <PageHeader title="User" />
 
             <Avatar

@@ -47,6 +47,8 @@ const Post: NextPage = () => {
                     ? data.post.text
                     : data.post.text.slice(0, 20) + "...")
             }
+            description={data.post.text}
+            imageUrl={data.post.fileUrl ? data.post.fileUrl : ""}
         >
             <PageHeader title="Post" />
             <PostComponent post={data.post} noBorder />

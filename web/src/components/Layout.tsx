@@ -12,6 +12,7 @@ interface Props {
     title?: string;
     pageName?: string;
     description?: string;
+    imageUrl?: string;
 }
 
 export const Layout: React.FC<Props> = ({
@@ -20,6 +21,7 @@ export const Layout: React.FC<Props> = ({
     title = "Kyle Board",
     pageName = "",
     description = "None quite like it.",
+    imageUrl = "/banner.png",
 }) => {
     const realTitle = pageName !== "" ? pageName + " | " + title : title;
     return (
@@ -34,14 +36,14 @@ export const Layout: React.FC<Props> = ({
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={realTitle} />
                 <meta name="twitter:description" content={description} />
-                <meta name="twitter:image" content="/banner.png" />
+                <meta name="twitter:image" content={imageUrl} />
 
                 {/* Facebook Meta Tags */}
                 <meta property="og:type" content="website" />
                 <meta property="og:title" content={realTitle} />
                 <meta property="og:description" content={description} />
                 <meta property="og:url" content="https://kylegodly.com" />
-                <meta property="og:image" content="/banner.png" />
+                <meta property="og:image" content={imageUrl} />
             </Head>
             <Navbar />
             <Wrapper variant={variant}>{children}</Wrapper>
