@@ -27,7 +27,7 @@ export const Register: React.FC<{}> = () => {
     };
 
     return (
-        <Layout variant="small">
+        <Layout variant="small" pageName="Register">
             <Heading fontSize="xl">Register</Heading>
             <Text mb="3">
                 Join a community of millions! That is if every single cell in my

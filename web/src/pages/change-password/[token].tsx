@@ -1,11 +1,11 @@
-import { Flex, Box, Button, Link } from "@chakra-ui/react";
+import { Box, Button, Flex, Link } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { InputField } from "../../components/InputField";
-import { Wrapper } from "../../components/Wrapper";
+import { Layout } from "../../components/Layout";
 import {
     MeDocument,
     MeQuery,
@@ -19,7 +19,7 @@ const ChangePassword: NextPage = () => {
     const [changePassword] = useChangePasswordMutation();
     const [tokenError, setTokenError] = useState("");
     return (
-        <Wrapper variant="small">
+        <Layout variant="small" pageName="Change Password">
             <Formik
                 initialValues={{ newPassword: "" }}
                 onSubmit={async (values, { setErrors }) => {
@@ -86,7 +86,7 @@ const ChangePassword: NextPage = () => {
                     </Form>
                 )}
             </Formik>
-        </Wrapper>
+        </Layout>
     );
 };
 
