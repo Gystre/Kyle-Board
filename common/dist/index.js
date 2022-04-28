@@ -20,7 +20,7 @@ exports.createRegisterSchema = (0, yup_1.object)().shape({
         .max(30, "Too long!")
         .required(),
     password: (0, yup_1.string)().min(3).max(255).required(),
-    captchaToken: (0, yup_1.string)().min(1).max(255, "Captcha is not complete!"),
+    captchaToken: (0, yup_1.string)().min(1, "Captcha is not complete!"),
 });
 exports.createLoginSchema = (0, yup_1.object)().shape({
     usernameOrEmail: (0, yup_1.string)()
