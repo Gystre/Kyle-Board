@@ -21,6 +21,7 @@ export const createRegisterSchema = object().shape({
         .max(30, "Too long!")
         .required(),
     password: string().min(3).max(255).required(),
+    captchaToken: string().min(1).max(255, "Captcha is not complete!"),
 });
 
 export const createLoginSchema = object().shape({
@@ -57,7 +58,6 @@ export const createPostSchema = object().shape({
 export const createS3Schema = object().shape({
     fileName: string().min(1).max(255).required(),
     fileType: string()
-        .required()
         .min(1)
         .test(
             "FILE_TYPE",

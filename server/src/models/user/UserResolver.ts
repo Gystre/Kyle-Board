@@ -4,6 +4,7 @@ import {
     PermissionLevel,
 } from "@kyle/common";
 import argon2 from "argon2";
+import { verify } from "hcaptcha";
 import {
     Arg,
     Ctx,
@@ -66,10 +67,9 @@ export class UserResolver {
     @Mutation(() => UserResponse)
     async register(
         @Arg("email") email: string,
-
         @Arg("username") username: string,
-
         @Arg("password") password: string,
+        @Arg("captchaToken") captchaToken: string,
 
         @Ctx() { req }: MyContext
     ): Promise<UserResponse> {
@@ -80,6 +80,21 @@ export class UserResolver {
             );
         } catch (err) {
             return formatYupError(err);
+        }
+
+        // verify token with hCaptcha servers
+        const verifyResponse = await verify(
+            __prod__
+                ? process.env.HCAPTCHA_SECRET_KEY
+                : "0x0000000000000000000000000000000000000000",
+            captchaToken
+        );
+        if (!verifyResponse.success) {
+            return {
+                errors: [
+                    { field: "captchaToken", message: "Validation failed" },
+                ],
+            };
         }
 
         //add the user

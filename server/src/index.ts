@@ -82,13 +82,14 @@ const main = async () => {
     app.use(
         cors({
             origin: function (origin, callback) {
-                console.log("attempted access from ", origin);
-
-                // if (allowedOrigins.indexOf(origin as string) !== -1) {
-                callback(null, true);
-                // } else {
-                //     callback(new Error(origin + " is not allowed by CORS"));
-                // }
+                if (
+                    !origin ||
+                    allowedOrigins.indexOf(origin as string) !== -1
+                ) {
+                    callback(null, true);
+                } else {
+                    callback(new Error(origin + " is not allowed by CORS"));
+                }
             },
 
             methods: ["GET", "POST"],

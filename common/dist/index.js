@@ -20,6 +20,7 @@ exports.createRegisterSchema = (0, yup_1.object)().shape({
         .max(30, "Too long!")
         .required(),
     password: (0, yup_1.string)().min(3).max(255).required(),
+    captchaToken: (0, yup_1.string)().min(1).max(255, "Captcha is not complete!"),
 });
 exports.createLoginSchema = (0, yup_1.object)().shape({
     usernameOrEmail: (0, yup_1.string)()
@@ -45,7 +46,6 @@ exports.createPostSchema = (0, yup_1.object)().shape({
 exports.createS3Schema = (0, yup_1.object)().shape({
     fileName: (0, yup_1.string)().min(1).max(255).required(),
     fileType: (0, yup_1.string)()
-        .required()
         .min(1)
         .test("FILE_TYPE", "File must be a jpg, jpeg, png, or gif", function (value) { return SUPPORTED_FORMATS.includes(value || ""); } // how can string possibly ever be undefined here???
     )

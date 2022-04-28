@@ -4,8 +4,8 @@ declare global {
       LOCAL_DATABASE_URL: string;
       LOCAL_REDIS_URL: string;
       LOCAL_PORT: string;
-      LOCAL_CORS_ORIGIN: string;
       SESSION_SECRET: string;
+      LOCAL_CORS_ORIGIN: string;
       GMAIL_USERNAME: string;
       GMAIL_PASSWORD: string;
       B2_KEY_ID: string;
@@ -13,6 +13,7 @@ declare global {
       B2_ENDPOINT_URL: string;
       B2_BUCKET: string;
       B2_BUCKET_ID: string;
+      HCAPTCHA_SECRET_KEY: string;
     }
   }
 }
