@@ -1,12 +1,6 @@
-import {
-    FormControl,
-    FormErrorMessage,
-    FormLabel,
-    Input,
-    Textarea,
-} from "@chakra-ui/react";
-import { useField } from "formik";
+import { Input, Textarea } from "@chakra-ui/react";
 import React, { InputHTMLAttributes } from "react";
+import { FormDecorator, FormDecoratorProps } from "./FormDecorator";
 
 /*
     Component for textarea's but in chakra style.
@@ -15,14 +9,14 @@ import React, { InputHTMLAttributes } from "react";
 
 //
 //make this component take in any props that a normal <input> element would take
-type Props = InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> & {
-    label: string;
-    name: string;
-    textarea?: boolean;
-};
+type Props = InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> &
+    FormDecoratorProps & {
+        textarea?: boolean;
+    };
 
 export const InputField: React.FC<Props> = ({
     label,
+    name,
     textarea,
     size: _,
     ...props
@@ -30,18 +24,13 @@ export const InputField: React.FC<Props> = ({
     //check if textarea, then change the component acorrdingly
     let InputOrTextArea = textarea ? Textarea : Input;
 
-    const [field, { error }] = useField(props);
     return (
-        // !! = cast to boolean ("" -> empty string becomes false, "asdfasdf" -> not empty becomes true)
-        <FormControl isInvalid={!!error}>
-            <FormLabel htmlFor={field.name}>{label}</FormLabel>
+        <FormDecorator label={label} name={name}>
             <InputOrTextArea
-                {...field}
+                id={name}
                 {...props}
-                id={field.name}
                 placeholder={props.placeholder}
             />
-            {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
-        </FormControl>
+        </FormDecorator>
     );
 };

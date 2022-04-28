@@ -1,8 +1,10 @@
-import { Box, Button, Heading, Link, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, Link, Text, useToast } from "@chakra-ui/react";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { createRegisterSchema } from "@kyle/common";
 import { Form, Formik } from "formik";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
+import { FormDecorator } from "../components/FormDecorator";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import WithSpeechBubbles from "../components/WithSpeechBubbles";
@@ -13,7 +15,30 @@ import { withApollo } from "../utils/withApollo";
 export const Register: React.FC<{}> = () => {
     //used to redirect user
     const router = useRouter();
+    const toast = useToast();
     const [register] = useRegisterMutation();
+
+    const onExpire = () => {
+        toast({
+            title: "hCaptcha token expired, please refresh the page",
+            position: "top",
+            status: "error",
+            isClosable: true,
+            duration: 5000,
+        });
+        console.log("hCaptcha token Expired");
+    };
+
+    const onError = (err: any) => {
+        toast({
+            title: `hCaptcha Error: ${err}`,
+            position: "top",
+            status: "error",
+            isClosable: true,
+            duration: 5000,
+        });
+        console.log(`hCaptcha Error: ${err}`);
+    };
 
     return (
         <Layout variant="small" pageName="Register">
@@ -24,13 +49,21 @@ export const Register: React.FC<{}> = () => {
             </Text>
             <Formik
                 validationSchema={createRegisterSchema}
-                initialValues={{ email: "", username: "", password: "" }}
+                initialValues={{
+                    email: "",
+                    username: "",
+                    password: "",
+                    captchaToken: "",
+                }}
                 onSubmit={async (values, { setErrors }) => {
+                    console.log(values);
+
                     const response = await register({
                         variables: {
                             email: values.email,
                             username: values.username,
                             password: values.password,
+                            captchaToken: values.captchaToken,
                         },
 
                         //take the result of the data and stick it into the me query on register
@@ -55,7 +88,7 @@ export const Register: React.FC<{}> = () => {
                     }
                 }}
             >
-                {({ isSubmitting, handleChange }) => (
+                {({ isSubmitting, handleChange, setFieldValue }) => (
                     <Form>
                         <InputField
                             label="Username"
@@ -79,6 +112,22 @@ export const Register: React.FC<{}> = () => {
                             onChange={handleChange}
                         />
 
+                        <Box mt={4} />
+                        <FormDecorator label="Captcha" name="captchaToken">
+                            <HCaptcha
+                                sitekey={
+                                    process.env
+                                        .NEXT_PUBLIC_HCAPTCHA_SITEKEY as string
+                                }
+                                onVerify={(captchaToken, ekey) => {
+                                    console.log(captchaToken, ekey);
+
+                                    setFieldValue("captchaToken", captchaToken);
+                                }}
+                                onError={onError}
+                                onExpire={onExpire}
+                            />
+                        </FormDecorator>
                         <Button mt={4} type="submit" isLoading={isSubmitting}>
                             Register
                         </Button>

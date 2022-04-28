@@ -73,6 +73,7 @@ export type MutationLoginArgs = {
 
 
 export type MutationRegisterArgs = {
+  captchaToken: Scalars['String'];
   email: Scalars['String'];
   password: Scalars['String'];
   username: Scalars['String'];
@@ -222,6 +223,7 @@ export type RegisterMutationVariables = Exact<{
   email: Scalars['String'];
   username: Scalars['String'];
   password: Scalars['String'];
+  captchaToken: Scalars['String'];
 }>;
 
 
@@ -516,8 +518,13 @@ export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
 export const RegisterDocument = gql`
-    mutation Register($email: String!, $username: String!, $password: String!) {
-  register(email: $email, username: $username, password: $password) {
+    mutation Register($email: String!, $username: String!, $password: String!, $captchaToken: String!) {
+  register(
+    email: $email
+    username: $username
+    password: $password
+    captchaToken: $captchaToken
+  ) {
     user {
       ...RegularUser
     }
@@ -546,6 +553,7 @@ export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, Regis
  *      email: // value for 'email'
  *      username: // value for 'username'
  *      password: // value for 'password'
+ *      captchaToken: // value for 'captchaToken'
  *   },
  * });
  */
