@@ -20,7 +20,9 @@ exports.createRegisterSchema = (0, yup_1.object)().shape({
         .max(30, "Too long!")
         .required(),
     password: (0, yup_1.string)().min(3).max(255).required(),
-    captchaToken: (0, yup_1.string)().min(1, "Captcha is not complete!"),
+    captchaToken: (0, yup_1.string)().test("length", "Captcha is not complete!", function (value) {
+        return (value === null || value === void 0 ? void 0 : value.length) > 0;
+    }),
 });
 exports.createLoginSchema = (0, yup_1.object)().shape({
     usernameOrEmail: (0, yup_1.string)()

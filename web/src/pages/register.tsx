@@ -56,8 +56,6 @@ export const Register: React.FC<{}> = () => {
                     captchaToken: "",
                 }}
                 onSubmit={async (values, { setErrors }) => {
-                    console.log(values);
-
                     const response = await register({
                         variables: {
                             email: values.email,
@@ -120,8 +118,6 @@ export const Register: React.FC<{}> = () => {
                                         .NEXT_PUBLIC_HCAPTCHA_SITEKEY as string
                                 }
                                 onVerify={(captchaToken, ekey) => {
-                                    console.log(captchaToken, ekey);
-
                                     setFieldValue("captchaToken", captchaToken);
                                 }}
                                 onError={onError}

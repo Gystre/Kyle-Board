@@ -6,13 +6,13 @@ Live board messaging thing. Using this project to experiment with integrating mo
 
 -   anti nsfw (ml stuff and other libraries)
 -   oauth? (if it's free)
--   CI/CD (github actions to docker build on pc and pull on vm)
--   anti spam and ddos (cloudflare ✔️, hcaptcha ❌, and server ratelimits [express probs handles this] ❌)
+-   anti spam and ddos (cloudflare ✔️, hcaptcha ✔️, and server ratelimits [express probs handles this] ❌)
 -   load balancing (docker swarm)
 
 ## Lower Priority Todo (i.e. fix in next project lol) ⚠️
 
 -   find a way to cache images to local storage, resetStore() refetches ALL images which kills my limits on backblaze (not sure where this happens in the stack, nextjs frontend or cloudflare cdn or maybe browser level local storage?)
+-   insert emitted post DIRECTLY into cache instead of invalidating the whole thing when someone posts something
 -   paginate search results
 -   rate limit searchs
 -   press tab in url to auto search (like in twitter.com and jisho.org)
@@ -27,7 +27,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   image uploading (backblaze)
 -   lightbox preview for images (probs just stick in a prebuilt package or smthn)
 -   FTS (postgres)
--   CI/CD (auto deploy dockerfile via github integration in heroku)
+-   CI/CD (auto deploy server with dockerfile via github integration in heroku and web with vercel github integration)
 
 ## Bugs
 
