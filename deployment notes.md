@@ -6,10 +6,11 @@
 4. set build & development settings to next.js defaults
 5. go to settings and set root directory as `web`
 6. go to environment variables
-7. add `NEXT_PUBLIC_SERVER_URL` with value `https://api.kylegodly.com/`
-8. add `NEXT_PUBLIC_GRAPHQL_URL` with value `https://api.kylegodly.com/graphql`
-9. push commit to auto build + deploy
-10. if using cloudflare dns, make sure to add the `A` and `CNAME` records to the dns settings
+7. add `NEXT_PUBLIC_SERVER_URL` = `https://api.kylegodly.com/`
+8. add `NEXT_PUBLIC_GRAPHQL_URL` = `https://api.kylegodly.com/graphql`
+9. add `NEXT_PUBLIC_HCAPTCHA_SITEKEY` = `ur hcaptcha site key from the website`
+10. push commit to auto build + deploy
+11. if using cloudflare dns, make sure to add the `A` and `CNAME` records to the dns settings
 
 # Notes
 
