@@ -10,7 +10,7 @@
 8. add `NEXT_PUBLIC_GRAPHQL_URL` = `https://api.kylegodly.com/graphql`
 9. add `NEXT_PUBLIC_HCAPTCHA_SITEKEY` = `ur hcaptcha site key from the website`
 10. push commit to auto build + deploy
-11. if using cloudflare dns, make sure to add the `A` and `CNAME` records to the dns settings
+11. if using cloudflare dns, make sure to add the `A` and `CNAME` records to the dns settings for any urls attached to the vercel project
 
 # Notes
 
@@ -32,7 +32,7 @@ Set these environment vars in heroku:
 3. go to addons and add heroku-postgresql and heroku-redis
 4. add `https://api.kylegodly.com` to custom domains
 5. go to cloudflare and add `cname` `api` `kyle-board.herokuapp.com`
-6. connect github and heroku
+6. connect github repo and heroku
 7. push change to github should trigger auto build and restart
 
 ## while github heroku integration is down
