@@ -193,7 +193,11 @@ const main = async () => {
 
     //stick on the socket.io stuff
     io = new IoServer(httpServer, {
-        cookie: true,
+        cookie: {
+            name: "io",
+            secure: __prod__,
+            domain: __prod__ ? ".kylegodly.com" : undefined,
+        },
         cors: {
             origin: __prod__
                 ? process.env.CORS_ORIGIN
