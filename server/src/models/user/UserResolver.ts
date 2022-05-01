@@ -75,7 +75,7 @@ export class UserResolver {
     ): Promise<UserResponse> {
         try {
             await createRegisterSchema.validate(
-                { email, username, password },
+                { email, username, password, captchaToken },
                 { abortEarly: false }
             );
         } catch (err) {

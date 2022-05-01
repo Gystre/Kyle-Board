@@ -21,13 +21,7 @@ export const createRegisterSchema = object().shape({
         .max(30, "Too long!")
         .required(),
     password: string().min(3).max(255).required(),
-    captchaToken: string().test(
-        "length",
-        "Captcha is not complete!",
-        (value: any) => {
-            return value?.length > 0;
-        }
-    ),
+    captchaToken: string().required("Captcha is not complete!"),
 });
 
 export const createLoginSchema = object().shape({
