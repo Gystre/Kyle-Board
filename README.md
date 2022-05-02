@@ -41,6 +41,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   argon2 v0.28 on docker requires GLIBC_2.25 and docker doesn't have that installed? Sticking with v0.27.2 for now
 -   cookies won't work when testing docker containers locally (intentional behavior but maybe doesn't have to be? don't know)
 -   common/dist isn't in gitignore b/c vercel doesn't know how to build it so i just package it in with each build
+-   there is a `.env.local example` file inside of `web/` to avoid using the local env vars inside of the prod environment in vercel
 
 Dump database schema
 

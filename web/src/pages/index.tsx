@@ -120,7 +120,6 @@ const Home: NextPage = () => {
                                     toErrorMap(response.data.createPost.errors)
                                 );
                             } else {
-                                // reset values
                                 resetForm();
 
                                 toast({

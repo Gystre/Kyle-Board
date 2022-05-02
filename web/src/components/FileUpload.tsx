@@ -55,8 +55,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                         // load a preview of the image
                         const reader = new FileReader();
                         reader.onloadstart = () =>
-                            setReadyState(FileReader.LOADING);
-                        reader.onloadend = () => setReadyState(FileReader.DONE);
+                            setReadyState(FileReaderReadyState.LOADING);
+                        reader.onloadend = () =>
+                            setReadyState(FileReaderReadyState.DONE);
                         reader.onload = function (e) {
                             imgRef.current?.setAttribute(
                                 "src",
@@ -97,7 +98,6 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             ) : null}
             <Image
                 ref={(e) => (imgRef.current = e)}
-                id="preview-image"
                 src={value_PreviewSrc ? value_PreviewSrc : ""}
                 alt=""
             />
