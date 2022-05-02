@@ -10,7 +10,6 @@ import {
 import { createPostSchema } from "@kyle/common";
 import { Form, Formik } from "formik";
 import type { NextPage } from "next";
-import { useState } from "react";
 import { FileUpload } from "../components/FileUpload";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
@@ -42,8 +41,6 @@ const Home: NextPage = () => {
     const [createPost] = useCreatePostMutation();
     const [signB2] = useSignB2Mutation();
 
-    const [previewSrc, setPreviewSrc] = useState<any | null>(null);
-
     if (!loading && !data) {
         return (
             <div>
@@ -68,8 +65,12 @@ const Home: NextPage = () => {
                 {loggedIn ? (
                     <Formik
                         validationSchema={createPostSchema}
-                        initialValues={{ text: "", file: null as File | null }}
-                        onSubmit={async (values, { setErrors }) => {
+                        initialValues={{
+                            text: "",
+                            file: null as File | null,
+                            previewSrc: "" as string | null,
+                        }}
+                        onSubmit={async (values, { setErrors, resetForm }) => {
                             // SOMEWHERE HERE I NEED TO CATCH ERROR OF NOT AUTHENTICATED (fix later probably)
 
                             // file was added, get upload url and send post request
@@ -120,9 +121,7 @@ const Home: NextPage = () => {
                                 );
                             } else {
                                 // reset values
-                                values.text = "";
-                                values.file = null;
-                                setPreviewSrc("");
+                                resetForm();
 
                                 toast({
                                     title: `Posted!`,
@@ -135,27 +134,25 @@ const Home: NextPage = () => {
                         }}
                     >
                         {({
+                            values,
                             isSubmitting,
                             handleChange,
                             setFieldValue,
-                            setFieldError,
                         }) => (
                             <Form>
                                 <InputField
-                                    label=""
                                     name="text"
                                     placeholder="type smthn here"
                                     onChange={handleChange}
+                                    value={values.text}
                                     textarea
                                 />
 
                                 <FileUpload
-                                    fieldName="file"
+                                    name="file"
                                     accept={".jpg, .jpeg, .png, .gif"}
                                     setFieldValue={setFieldValue}
-                                    setFieldError={setFieldError}
-                                    previewSrc={previewSrc}
-                                    setPreviewSrc={setPreviewSrc}
+                                    value_PreviewSrc={values.previewSrc}
                                 />
 
                                 <Button type="submit" isLoading={isSubmitting}>

@@ -6,14 +6,13 @@ Live board messaging thing. Using this project to experiment with integrating mo
 
 -   anti nsfw (ml stuff and other libraries)
 -   oauth? (if it's free)
--   anti spam and ddos (cloudflare ✔️, hcaptcha ✔️, and server ratelimits [do this at the graphql level] ❌)
+-   anti spam and ddos (cloudflare ✔️, hcaptcha ✔️, and server ratelimits for searchs and posts [do this at the graphql level] ❌)
 
 ## Lower Priority Todo (i.e. fix in next project lol) ⚠️
 
 -   find a way to cache images to local storage, resetStore() refetches ALL images which kills my limits on backblaze (not sure where this happens in the stack, nextjs frontend or cloudflare cdn or maybe browser level local storage?)
 -   insert emitted post DIRECTLY into cache instead of invalidating the whole thing when someone posts something (HIGH PRIORITY)
 -   paginate search results
--   rate limit searchs
 -   press tab in url to auto search (like in twitter.com and jisho.org)
 -   test overflow for profile picture search results
 -   upload custom profile picture
@@ -41,6 +40,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 
 -   argon2 v0.28 on docker requires GLIBC_2.25 and docker doesn't have that installed? Sticking with v0.27.2 for now
 -   cookies won't work when testing docker containers locally (intentional behavior but maybe doesn't have to be? don't know)
+-   common/dist isn't in gitignore b/c vercel doesn't know how to build it so i just package it in with each build
 
 Dump database schema
 
