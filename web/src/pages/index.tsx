@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/client";
 import {
     Box,
     Button,
@@ -7,20 +8,21 @@ import {
     Stack,
     useToast,
 } from "@chakra-ui/react";
-import { createPostSchema } from "@kyle/common";
+import { createPostSchema, SocketCmds } from "@kyle/common";
 import { Form, Formik } from "formik";
 import type { NextPage } from "next";
-import { useState } from "react";
+import { useContext, useEffect } from "react";
 import { FileUpload } from "../components/FileUpload";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import { Post } from "../components/Post";
+import { socketContext } from "../components/SocketProvider";
 import {
+    PostResultFragment,
     useCreatePostMutation,
     usePostsQuery,
     useSignB2Mutation,
 } from "../generated/graphql";
-import { useSocket } from "../utils/socket";
 import { toErrorMap } from "../utils/toErrorMap";
 import { uploadToB2 } from "../utils/uploadToB2";
 import { useIsAuth } from "../utils/useIsAuth";
@@ -28,7 +30,6 @@ import { withApollo } from "../utils/withApollo";
 
 const Home: NextPage = () => {
     const loggedIn = useIsAuth();
-    useSocket();
     const toast = useToast();
 
     const { data, error, loading, fetchMore } = usePostsQuery({
@@ -42,7 +43,36 @@ const Home: NextPage = () => {
     const [createPost] = useCreatePostMutation();
     const [signB2] = useSignB2Mutation();
 
-    const [previewSrc, setPreviewSrc] = useState<any | null>(null);
+    const apolloClient = useApolloClient();
+    const socket = useContext(socketContext);
+    useEffect(() => {
+        socket.on(SocketCmds.SendMessage, (post: PostResultFragment) => {
+            // apolloClient.cache.modify({
+            //     fields: {
+            //         posts(existing = []) {
+            //             console.log(existing);
+            //             return {
+            //                 ...existing,
+            //                 posts: [
+            //                     ...existing.posts,
+            //                     { __ref: "Post:35" },
+            //                 ],
+            //             };
+            //         },
+            //     },
+            // });
+
+            // TODO: better than resetStore() since we don't have to refetch Me query
+            // but still inefficient since could just write into cache and force react to reload page with new cached data somehow
+            apolloClient.cache.evict({ fieldName: "posts:{}" });
+            apolloClient.cache.gc();
+        });
+
+        socket.on(SocketCmds.DeleteMessage, (id) => {
+            apolloClient.cache.evict({ id: "Post:" + id });
+            apolloClient.cache.gc();
+        });
+    }, [socket, apolloClient.cache]);
 
     if (!loading && !data) {
         return (
@@ -68,8 +98,12 @@ const Home: NextPage = () => {
                 {loggedIn ? (
                     <Formik
                         validationSchema={createPostSchema}
-                        initialValues={{ text: "", file: null as File | null }}
-                        onSubmit={async (values, { setErrors }) => {
+                        initialValues={{
+                            text: "",
+                            file: null as File | null,
+                            previewSrc: "" as string | null,
+                        }}
+                        onSubmit={async (values, { setErrors, resetForm }) => {
                             // SOMEWHERE HERE I NEED TO CATCH ERROR OF NOT AUTHENTICATED (fix later probably)
 
                             // file was added, get upload url and send post request
@@ -119,10 +153,7 @@ const Home: NextPage = () => {
                                     toErrorMap(response.data.createPost.errors)
                                 );
                             } else {
-                                // reset values
-                                values.text = "";
-                                values.file = null;
-                                setPreviewSrc("");
+                                resetForm();
 
                                 toast({
                                     title: `Posted!`,
@@ -135,27 +166,25 @@ const Home: NextPage = () => {
                         }}
                     >
                         {({
+                            values,
                             isSubmitting,
                             handleChange,
                             setFieldValue,
-                            setFieldError,
                         }) => (
                             <Form>
                                 <InputField
-                                    label=""
                                     name="text"
                                     placeholder="type smthn here"
                                     onChange={handleChange}
+                                    value={values.text}
                                     textarea
                                 />
 
                                 <FileUpload
-                                    fieldName="file"
+                                    name="file"
                                     accept={".jpg, .jpeg, .png, .gif"}
                                     setFieldValue={setFieldValue}
-                                    setFieldError={setFieldError}
-                                    previewSrc={previewSrc}
-                                    setPreviewSrc={setPreviewSrc}
+                                    value_PreviewSrc={values.previewSrc}
                                 />
 
                                 <Button type="submit" isLoading={isSubmitting}>

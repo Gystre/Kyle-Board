@@ -18,7 +18,6 @@ import React from "react";
 import { FiSearch } from "react-icons/fi";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 import { isServer } from "../utils/isServer";
-import { useSocket } from "../utils/socket";
 import { LinkName } from "./LinkName";
 import { ProfilePicture } from "./ProfilePicture";
 
@@ -29,7 +28,6 @@ export const Navbar: React.FC<Props> = () => {
     const [logout, { loading: logoutFetching }] = useLogoutMutation(); //the mutation function we use on the front end to communicate with the backend
     const apolloClient = useApolloClient();
     const { data, loading } = useMeQuery({ skip: isServer() });
-    const socket = useSocket();
 
     let body = null;
 
@@ -67,7 +65,6 @@ export const Navbar: React.FC<Props> = () => {
                 <Button
                     onClick={async () => {
                         await logout();
-                        socket.disconnect();
 
                         //reset cache
                         await apolloClient.resetStore();

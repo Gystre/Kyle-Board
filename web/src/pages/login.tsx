@@ -41,7 +41,7 @@ export const Login: React.FC<{}> = () => {
             <Text mb="3">haha loser</Text>
             <Formik
                 initialValues={{ usernameOrEmail: "", password: "" }}
-                onSubmit={async (values, { setErrors, setFieldError }) => {
+                onSubmit={async (values, { setErrors }) => {
                     const response = await login({
                         variables: values,
                         update: (cache, { data }) => {
@@ -52,10 +52,6 @@ export const Login: React.FC<{}> = () => {
                                     me: data?.login.user,
                                 },
                             });
-
-                            //clear all posts on login
-                            cache.evict({ fieldName: "posts:{}" });
-                            cache.gc();
                         },
                     });
 

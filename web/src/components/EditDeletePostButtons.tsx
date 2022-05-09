@@ -53,7 +53,7 @@ export const EditDeletePostButtons: React.FC<Props> = ({ id, creatorId }) => {
                                 cache.gc();
 
                                 toast({
-                                    title: `Deleted post ${id}`,
+                                    title: `Deleted post`,
                                     position: "top",
                                     status: "success",
                                     isClosable: true,

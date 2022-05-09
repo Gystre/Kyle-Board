@@ -6,18 +6,21 @@ Live board messaging thing. Using this project to experiment with integrating mo
 
 -   anti nsfw (ml stuff and other libraries)
 -   oauth? (if it's free)
--   anti spam and ddos (cloudflare ✔️, hcaptcha ✔️, and server ratelimits [express probs handles this] ❌)
--   load balancing (docker swarm)
+-   anti spam and ddos (cloudflare ✔️, hcaptcha ✔️, and server ratelimits for searchs and posts [do this at the graphql level] ❌)
 
 ## Lower Priority Todo (i.e. fix in next project lol) ⚠️
 
 -   find a way to cache images to local storage, resetStore() refetches ALL images which kills my limits on backblaze (not sure where this happens in the stack, nextjs frontend or cloudflare cdn or maybe browser level local storage?)
--   insert emitted post DIRECTLY into cache instead of invalidating the whole thing when someone posts something
+-   insert emitted post DIRECTLY into cache instead of invalidating the whole thing when someone posts something (HIGH PRIORITY)
 -   paginate search results
--   rate limit searchs
 -   press tab in url to auto search (like in twitter.com and jisho.org)
 -   test overflow for profile picture search results
 -   upload custom profile picture
+-   load balancing (not possible on heroku)
+    -   I was hoping to be able to use something that like nginx, docker swarm, or kubernetes to scale out the app but heroku locks you to their home built scaling system. Will need to switch to a cloud vm provider or a different backend hosting service.
+-   replies
+-   upvote post
+-   client dark mode (i really should have built the website around this to begin with)
 
 ## Done ✔️
 
@@ -32,11 +35,14 @@ Live board messaging thing. Using this project to experiment with integrating mo
 ## Bugs
 
 -   logging out in different tab doesn't logout all tabs
+-   new posts only appear on refresh while viewing user's profile
 
 ## Misc
 
 -   argon2 v0.28 on docker requires GLIBC_2.25 and docker doesn't have that installed? Sticking with v0.27.2 for now
 -   cookies won't work when testing docker containers locally (intentional behavior but maybe doesn't have to be? don't know)
+-   common/dist isn't in gitignore b/c vercel doesn't know how to build it so i just package it in with each build
+-   there is a `.env.local example` file inside of `web/` to avoid using the local env vars inside of the prod environment in vercel
 
 Dump database schema
 

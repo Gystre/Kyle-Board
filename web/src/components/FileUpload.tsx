@@ -1,106 +1,96 @@
-import {
-    Box,
-    CloseButton,
-    FormControl,
-    FormErrorMessage,
-    IconButton,
-    Image,
-} from "@chakra-ui/react";
-import { MAX_FILE_SIZE_MB } from "@kyle/common";
-import { useField } from "formik";
-import { Dispatch, SetStateAction, useRef } from "react";
+import { Box, CloseButton, IconButton, Image, Spinner } from "@chakra-ui/react";
+import { useRef, useState } from "react";
 import { FiImage } from "react-icons/fi";
+import { FormDecorator, FormDecoratorProps } from "./FormDecorator";
 
 /*
-    Component which provides an input for file upload as well as a local image preview.
-    I would like to keep this self contained in a single component but for now, ur gonna need to pass in a state
-    to keep track of the preview image url manually.
+    Component designed for formik which provides an input for file upload as well as a local image preview.
+    Requires previewSrc and file state values as well as setFieldValue in the formik form to work.
 */
 
 type FileUploadProps = {
-    fieldName: string;
-    accept?: string;
+    accept: string;
     setFieldValue: (
         field: string,
         value: any,
         shouldValidate?: boolean | undefined
     ) => void;
-    setFieldError: (field: string, message: string | undefined) => void;
-    previewSrc: any | null;
-    setPreviewSrc: Dispatch<SetStateAction<any | null>>;
-};
+    value_PreviewSrc: string | null; // comes from the values object in the formick form
+} & FormDecoratorProps;
+
+enum FileReaderReadyState {
+    EMPTY,
+    LOADING,
+    DONE,
+}
 
 export const FileUpload: React.FC<FileUploadProps> = ({
-    fieldName,
+    name,
     accept,
     setFieldValue,
-    setFieldError,
-    previewSrc,
-    setPreviewSrc,
+    value_PreviewSrc,
 }) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const imgRef = useRef<HTMLImageElement | null>(null);
-
-    const [field, { error }] = useField(fieldName);
+    const [readyState, setReadyState] = useState<FileReaderReadyState>();
 
     return (
-        <FormControl isInvalid={!!error}>
-            <input
-                type={"file"}
-                multiple={false}
-                hidden
-                accept={accept}
-                ref={(e) => (inputRef.current = e)}
-                onChange={(event) => {
-                    const files = event.currentTarget.files as FileList;
+        <>
+            <FormDecorator name={name}>
+                <input
+                    type={"file"}
+                    multiple={false}
+                    hidden
+                    accept={accept}
+                    ref={(e) => (inputRef.current = e)}
+                    onChange={(event) => {
+                        const files = event.currentTarget.files as FileList;
 
-                    if (!files[0]) {
-                        return;
-                    }
+                        if (!files[0]) {
+                            return;
+                        }
 
-                    if (files[0].size > MAX_FILE_SIZE_MB * 1000000) {
-                        setFieldError(
-                            fieldName,
-                            `File can't be bigger than ${MAX_FILE_SIZE_MB}mb`
-                        );
-                        return;
-                    }
+                        setFieldValue(name, files[0]);
 
-                    setFieldValue(fieldName, files[0]);
-
-                    // load a preview of the image
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        imgRef.current?.setAttribute(
-                            "src",
-                            e.target?.result as string
-                        );
-                        setPreviewSrc(e.target?.result);
-                    };
-                    reader.readAsDataURL(files[0]);
-                }}
-            />
-            <Box>
-                <IconButton
-                    onClick={() => {
-                        inputRef.current?.click();
+                        // load a preview of the image
+                        const reader = new FileReader();
+                        reader.onloadstart = () =>
+                            setReadyState(FileReaderReadyState.LOADING);
+                        reader.onloadend = () =>
+                            setReadyState(FileReaderReadyState.DONE);
+                        reader.onload = function (e) {
+                            imgRef.current?.setAttribute(
+                                "src",
+                                e.target?.result as string
+                            );
+                            setFieldValue("previewSrc", e.target?.result);
+                        };
+                        reader.readAsDataURL(files[0]);
                     }}
-                    aria-label="upload image"
-                    icon={<FiImage />}
-                    backgroundColor="transparent"
                 />
-            </Box>
-            {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
+                <Box>
+                    <IconButton
+                        onClick={() => {
+                            inputRef.current?.click();
+                        }}
+                        aria-label="upload image"
+                        icon={<FiImage />}
+                        backgroundColor="transparent"
+                    />
+                </Box>
+            </FormDecorator>
 
-            {previewSrc ? (
+            {readyState == FileReaderReadyState.LOADING ? <Spinner /> : null}
+
+            {value_PreviewSrc ? (
                 <Box position="relative">
                     <Box position="absolute" left={0} zIndex={5}>
                         <CloseButton
                             backgroundColor="white"
                             margin={2}
                             onClick={() => {
-                                setFieldValue(fieldName, null);
-                                setPreviewSrc(null);
+                                setFieldValue("file", null);
+                                setFieldValue("previewSrc", null);
                             }}
                         />
                     </Box>
@@ -108,10 +98,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             ) : null}
             <Image
                 ref={(e) => (imgRef.current = e)}
-                id="preview-image"
-                src={previewSrc ? previewSrc : ""}
+                src={value_PreviewSrc ? value_PreviewSrc : ""}
                 alt=""
             />
-        </FormControl>
+        </>
     );
 };
