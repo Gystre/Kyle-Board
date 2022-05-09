@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/client";
 import {
     Box,
     Button,
@@ -7,19 +8,21 @@ import {
     Stack,
     useToast,
 } from "@chakra-ui/react";
-import { createPostSchema } from "@kyle/common";
+import { createPostSchema, SocketCmds } from "@kyle/common";
 import { Form, Formik } from "formik";
 import type { NextPage } from "next";
+import { useContext, useEffect } from "react";
 import { FileUpload } from "../components/FileUpload";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import { Post } from "../components/Post";
+import { socketContext } from "../components/SocketProvider";
 import {
+    PostResultFragment,
     useCreatePostMutation,
     usePostsQuery,
     useSignB2Mutation,
 } from "../generated/graphql";
-import { useSocket } from "../utils/socket";
 import { toErrorMap } from "../utils/toErrorMap";
 import { uploadToB2 } from "../utils/uploadToB2";
 import { useIsAuth } from "../utils/useIsAuth";
@@ -27,7 +30,6 @@ import { withApollo } from "../utils/withApollo";
 
 const Home: NextPage = () => {
     const loggedIn = useIsAuth();
-    useSocket();
     const toast = useToast();
 
     const { data, error, loading, fetchMore } = usePostsQuery({
@@ -40,6 +42,37 @@ const Home: NextPage = () => {
 
     const [createPost] = useCreatePostMutation();
     const [signB2] = useSignB2Mutation();
+
+    const apolloClient = useApolloClient();
+    const socket = useContext(socketContext);
+    useEffect(() => {
+        socket.on(SocketCmds.SendMessage, (post: PostResultFragment) => {
+            // apolloClient.cache.modify({
+            //     fields: {
+            //         posts(existing = []) {
+            //             console.log(existing);
+            //             return {
+            //                 ...existing,
+            //                 posts: [
+            //                     ...existing.posts,
+            //                     { __ref: "Post:35" },
+            //                 ],
+            //             };
+            //         },
+            //     },
+            // });
+
+            // TODO: better than resetStore() since we don't have to refetch Me query
+            // but still inefficient since could just write into cache and force react to reload page with new cached data somehow
+            apolloClient.cache.evict({ fieldName: "posts:{}" });
+            apolloClient.cache.gc();
+        });
+
+        socket.on(SocketCmds.DeleteMessage, (id) => {
+            apolloClient.cache.evict({ id: "Post:" + id });
+            apolloClient.cache.gc();
+        });
+    }, [socket, apolloClient.cache]);
 
     if (!loading && !data) {
         return (

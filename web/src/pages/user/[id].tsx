@@ -16,12 +16,10 @@ import { PageHeader } from "../../components/PageHeader";
 import { Post } from "../../components/Post";
 import { useFindByIdQuery, usePostsQuery } from "../../generated/graphql";
 import { convertPermission } from "../../utils/convertPermission";
-import { useSocket } from "../../utils/socket";
 import { withApollo } from "../../utils/withApollo";
 
 const User: NextPage = () => {
     const router = useRouter();
-    useSocket();
     const id =
         typeof router.query.id === "string" ? parseInt(router.query.id) : -1;
     const { data, error, loading } = useFindByIdQuery({
@@ -30,6 +28,8 @@ const User: NextPage = () => {
         },
     });
 
+    // TODO: figure out how to filter out posts in cache instead of just refetching everything
+    // would also allow new post updates to occur on user profile
     const posts = usePostsQuery({
         variables: {
             limit: 15,
@@ -37,7 +37,7 @@ const User: NextPage = () => {
             creatorId: id,
         },
         notifyOnNetworkStatusChange: true,
-        fetchPolicy: "no-cache", // TODO: figure out how to merge new posts while also combining them with the cached posts for more efficient network transfer
+        fetchPolicy: "no-cache",
     });
 
     if (error) {

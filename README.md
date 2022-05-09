@@ -35,6 +35,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 ## Bugs
 
 -   logging out in different tab doesn't logout all tabs
+-   new posts only appear on refresh while viewing user's profile
 
 ## Misc
 
