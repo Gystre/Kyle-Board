@@ -2,6 +2,8 @@
 
 Live board messaging thing. Using this project to experiment with integrating more complex backend systems (scale out, load balancing, ddos mitigation, etc.) which means the front end is going to be relatively basic.
 
+![really cool picture of the website](https://cdn.discordapp.com/attachments/200994742782132224/973335561530138634/unknown.png)
+
 ## Todo ❌
 
 -   anti nsfw (ml stuff and other libraries)
@@ -43,6 +45,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   cookies won't work when testing docker containers locally (intentional behavior but maybe doesn't have to be? don't know)
 -   common/dist isn't in gitignore b/c vercel doesn't know how to build it so i just package it in with each build
 -   there is a `.env.local example` file inside of `web/` to avoid using the local env vars inside of the prod environment in vercel
+-   random `docker-compose.yml` in case I ever want to deploy on vps and want to look into scaling out
 
 Dump database schema
 
