@@ -32,7 +32,7 @@ export const createLoginSchema = object().shape({
     password: string().min(3).max(255).required(),
 });
 
-export const MAX_FILE_SIZE_MB = 10;
+export const MAX_FILE_SIZE_MB = 15;
 const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
 
 export const createPostSchema = object().shape({
