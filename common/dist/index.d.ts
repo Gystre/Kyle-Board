@@ -32,7 +32,7 @@ export declare const createLoginSchema: import("yup").ObjectSchema<import("yup/l
     usernameOrEmail: import("yup/lib/string").RequiredStringSchema<string | undefined, import("yup/lib/types").AnyObject>;
     password: import("yup/lib/string").RequiredStringSchema<string | undefined, import("yup/lib/types").AnyObject>;
 }>>>;
-export declare const MAX_FILE_SIZE_MB = 10;
+export declare const MAX_FILE_SIZE_MB = 15;
 export declare const createPostSchema: import("yup").ObjectSchema<import("yup/lib/object").Assign<import("yup/lib/object").ObjectShape, {
     text: import("yup/lib/string").RequiredStringSchema<string | undefined, import("yup/lib/types").AnyObject>;
     file: import("yup/lib/mixed").MixedSchema<any, import("yup/lib/types").AnyObject, any>;

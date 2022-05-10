@@ -29,7 +29,7 @@ exports.createLoginSchema = (0, yup_1.object)().shape({
         .required(),
     password: (0, yup_1.string)().min(3).max(255).required(),
 });
-exports.MAX_FILE_SIZE_MB = 10;
+exports.MAX_FILE_SIZE_MB = 15;
 var SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
 exports.createPostSchema = (0, yup_1.object)().shape({
     text: (0, yup_1.string)().min(1, "Too short!").max(300, "Too long!").required(),
