@@ -14,6 +14,7 @@ const Changelog: NextPage = () => {
             <Heading>v1.2</Heading>
             <UnorderedList>
                 <ListItem>upload videos</ListItem>
+                <ListItem>seo fixes</ListItem>
                 <ListItem>bug fixes</ListItem>
             </UnorderedList>
 

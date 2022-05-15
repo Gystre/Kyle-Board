@@ -51,10 +51,20 @@ export const Post: React.FC<PostProps> = ({ post: p, noBorder = false }) => {
             );
         } else if (p.fileType == FileType.Video) {
             fileContent = (
-                <video controls style={{ display: "block", margin: "auto" }}>
-                    <source src={p.fileUrl} />
-                    Your browser doesn&apos;t support HTML5 video lmao
-                </video>
+                <>
+                    <Box mt={2} />
+                    <video
+                        controls
+                        style={{
+                            display: "block",
+                            margin: "auto",
+                            borderRadius: "var(--chakra-radii-md)",
+                        }}
+                    >
+                        <source src={p.fileUrl} />
+                        Your browser doesn&apos;t support HTML5 video lmao
+                    </video>
+                </>
             );
         }
     }
