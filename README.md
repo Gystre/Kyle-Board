@@ -24,6 +24,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   upvote post
 -   client dark mode (i really should have built the website around this to begin with)
 -   stripe for payments (simple donate button or smthn)
+-   compression for files
 
 ## Done ✔️
 
@@ -34,11 +35,14 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   lightbox preview for images (probs just stick in a prebuilt package or smthn)
 -   FTS (postgres)
 -   CI/CD (auto deploy server with dockerfile via github integration in heroku and web with vercel github integration)
+-   upload videos
 
 ## Bugs
 
 -   logging out in different tab doesn't logout all tabs
 -   new posts only appear on refresh while viewing user's profile
+-   video embed for discord doesn't work, meta tags broken
+-   no thumbnail for video tag on mobile
 
 ## Misc
 
