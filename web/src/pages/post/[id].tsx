@@ -1,4 +1,5 @@
 import { Box, Spinner } from "@chakra-ui/react";
+import { FileType } from "@kyle/common";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { Layout } from "../../components/Layout";
@@ -48,7 +49,8 @@ const Post: NextPage = () => {
                     : data.post.text.slice(0, 20) + "...")
             }
             description={data.post.text}
-            imageUrl={data.post.fileUrl ? data.post.fileUrl : ""}
+            fileUrl={data.post.fileUrl ? data.post.fileUrl : ""}
+            fileType={data.post.fileType as FileType}
         >
             <PageHeader title="Post" />
             <PostComponent post={data.post} noBorder />

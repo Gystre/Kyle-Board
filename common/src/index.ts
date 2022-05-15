@@ -5,7 +5,7 @@ import { mixed, object, string } from "yup";
     maybe add Mixed file type or smthn later for posts with multiple videos and images
 */
 export enum FileType {
-    Unknown, // used during validation if can't figure out what file type it is
+    Unknown, // generic empty value to use if don't know what kind of file we using. Used during validation if can't figure out what file type it is
     Image,
     Video,
 }
