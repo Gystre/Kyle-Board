@@ -1,5 +1,5 @@
-mutation CreatePost($text: String!, $newFileName: String) {
-    createPost(text: $text, newFileName: $newFileName) {
+mutation CreatePost($text: String!, $newFileName: String, $fileType: Int) {
+    createPost(text: $text, newFileName: $newFileName, fileType: $fileType) {
         post {
             ...PostResult
         }

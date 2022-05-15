@@ -1,3 +1,8 @@
+export declare enum FileType {
+    Unknown = 0,
+    Image = 1,
+    Video = 2
+}
 export declare enum PermissionLevel {
     User = 0,
     Admin = 1
@@ -33,6 +38,8 @@ export declare const createLoginSchema: import("yup").ObjectSchema<import("yup/l
     password: import("yup/lib/string").RequiredStringSchema<string | undefined, import("yup/lib/types").AnyObject>;
 }>>>;
 export declare const MAX_FILE_SIZE_MB = 15;
+export declare const INPUT_SUPPORTED_FORMATS = "image/*, video/*";
+export declare const getFileType: (str: string) => FileType;
 export declare const createPostSchema: import("yup").ObjectSchema<import("yup/lib/object").Assign<import("yup/lib/object").ObjectShape, {
     text: import("yup/lib/string").RequiredStringSchema<string | undefined, import("yup/lib/types").AnyObject>;
     file: import("yup/lib/mixed").MixedSchema<any, import("yup/lib/types").AnyObject, any>;

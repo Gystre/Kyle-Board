@@ -23,6 +23,7 @@ Live board messaging thing. Using this project to experiment with integrating mo
 -   replies
 -   upvote post
 -   client dark mode (i really should have built the website around this to begin with)
+-   stripe for payments (simple donate button or smthn)
 
 ## Done ✔️
 
@@ -63,4 +64,10 @@ Import Database
 
 ```
 psql dbname < importfile.sql
+```
+
+Set admin via heroku cli
+
+```
+heroku pg:psql -c "update public.user set \"permissionLevel\"=1 where username='saist'" -a kyle-board
 ```

@@ -8,10 +8,17 @@ import {
     Stack,
     useToast,
 } from "@chakra-ui/react";
-import { createPostSchema, SocketCmds } from "@kyle/common";
+import {
+    createPostSchema,
+    FileType,
+    getFileType,
+    SocketCmds,
+} from "@kyle/common";
 import { Form, Formik } from "formik";
 import type { NextPage } from "next";
+import NextLink from "next/link";
 import { useContext, useEffect } from "react";
+import { FiHash } from "react-icons/fi";
 import { FileUpload } from "../components/FileUpload";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
@@ -94,6 +101,15 @@ const Home: NextPage = () => {
     return (
         <>
             <Layout>
+                <NextLink href="/changelog" passHref>
+                    <Button
+                        leftIcon={<FiHash />}
+                        colorScheme="teal"
+                        variant="solid"
+                    >
+                        Changelog - v1.2
+                    </Button>
+                </NextLink>
                 {/* only show the ability to make form if they're logged in */}
                 {loggedIn ? (
                     <Formik
@@ -105,9 +121,9 @@ const Home: NextPage = () => {
                         }}
                         onSubmit={async (values, { setErrors, resetForm }) => {
                             // SOMEWHERE HERE I NEED TO CATCH ERROR OF NOT AUTHENTICATED (fix later probably)
-
                             // file was added, get upload url and send post request
-                            var newFileName = null;
+                            var newFileName: string | null | undefined = null;
+                            var fileType: FileType | null = null;
                             if (values.file) {
                                 const signB2Response = await signB2({
                                     variables: {
@@ -132,6 +148,7 @@ const Home: NextPage = () => {
 
                                 newFileName =
                                     signB2Response.data.signB2.fileName;
+                                fileType = getFileType(values.file.type);
 
                                 await uploadToB2(
                                     values.file,
@@ -145,7 +162,11 @@ const Home: NextPage = () => {
                             }
 
                             const response = await createPost({
-                                variables: { text: values.text, newFileName },
+                                variables: {
+                                    text: values.text,
+                                    newFileName,
+                                    fileType,
+                                },
                             });
 
                             if (response.data?.createPost.errors) {
@@ -182,7 +203,6 @@ const Home: NextPage = () => {
 
                                 <FileUpload
                                     name="file"
-                                    accept={".jpg, .jpeg, .png, .gif"}
                                     setFieldValue={setFieldValue}
                                     value_PreviewSrc={values.previewSrc}
                                 />
@@ -194,9 +214,7 @@ const Home: NextPage = () => {
                         )}
                     </Formik>
                 ) : null}
-
                 <Box mb={5} />
-
                 {!data && loading ? (
                     <Box textAlign="center">
                         <Box mb={4}>Loading stuff...</Box>
