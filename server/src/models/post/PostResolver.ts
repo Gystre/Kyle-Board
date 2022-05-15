@@ -1,6 +1,7 @@
 import {
     createPostSchema,
     createS3Schema,
+    FileType,
     PermissionLevel,
     SocketCmds,
 } from "@kyle/common";
@@ -124,6 +125,7 @@ export class PostResolver {
     async createPost(
         @Arg("text") text: string,
         @Arg("newFileName", { nullable: true }) newFileName: string,
+        @Arg("fileType", () => Int, { nullable: true }) fileType: FileType,
         @Ctx() { req }: MyContext
     ): Promise<PostResponse> {
         try {
@@ -132,6 +134,7 @@ export class PostResolver {
             if (newFileName)
                 await createValidateFileUrlSchema.validate({
                     newFileName,
+                    fileType,
                 });
         } catch (err) {
             return formatYupError(err);
@@ -153,6 +156,7 @@ export class PostResolver {
                   "/" +
                   newFileName
                 : undefined, // null in postgres but undefined in js??????
+            fileType,
         }).save();
 
         // tell the connected people that something new was posted

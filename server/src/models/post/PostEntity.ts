@@ -1,3 +1,4 @@
+import { FileType } from "@kyle/common";
 import { Field, ObjectType } from "type-graphql";
 import {
     BaseEntity,
@@ -28,6 +29,10 @@ export class Post extends BaseEntity {
     @Field()
     @Column()
     text!: string;
+
+    @Field({ nullable: true })
+    @Column({ nullable: true, default: null })
+    fileType?: FileType;
 
     @Field({ nullable: true })
     @Column({ nullable: true, default: null })

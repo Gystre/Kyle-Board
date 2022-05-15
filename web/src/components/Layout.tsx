@@ -9,10 +9,10 @@ import { Wrapper, WrapperVariant } from "./Wrapper";
 
 interface Props {
     variant?: WrapperVariant;
-    title?: string;
-    pageName?: string;
-    description?: string;
-    imageUrl?: string;
+    title?: string; // used to complete the title
+    pageName?: string; // used to complete the title
+    description?: string; // the desc text you see in the embed
+    imageUrl?: string; // the image in the embed
 }
 
 export const Layout: React.FC<Props> = ({

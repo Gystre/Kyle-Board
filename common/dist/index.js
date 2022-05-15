@@ -1,7 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createS3Schema = exports.createPostSchema = exports.MAX_FILE_SIZE_MB = exports.createLoginSchema = exports.createRegisterSchema = exports.SocketCmds = exports.PermissionLevel = void 0;
+exports.createS3Schema = exports.createPostSchema = exports.getFileType = exports.INPUT_SUPPORTED_FORMATS = exports.MAX_FILE_SIZE_MB = exports.createLoginSchema = exports.createRegisterSchema = exports.SocketCmds = exports.PermissionLevel = exports.FileType = void 0;
 var yup_1 = require("yup");
+/*
+    used in Post table: determines the type of file that is attached with
+    maybe add Mixed file type or smthn later for posts with multiple videos and images
+*/
+var FileType;
+(function (FileType) {
+    FileType[FileType["Unknown"] = 0] = "Unknown";
+    FileType[FileType["Image"] = 1] = "Image";
+    FileType[FileType["Video"] = 2] = "Video";
+})(FileType = exports.FileType || (exports.FileType = {}));
 var PermissionLevel;
 (function (PermissionLevel) {
     PermissionLevel[PermissionLevel["User"] = 0] = "User";
@@ -30,7 +40,24 @@ exports.createLoginSchema = (0, yup_1.object)().shape({
     password: (0, yup_1.string)().min(3).max(255).required(),
 });
 exports.MAX_FILE_SIZE_MB = 15;
-var SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
+var SUPPORTED_FORMATS = {
+    image: FileType.Image,
+    video: FileType.Video,
+};
+// for the html input tag on frontend
+exports.INPUT_SUPPORTED_FORMATS = "image/*, video/*";
+// this is probably the most pointless piece code in the entire codebase but wutever it works lol
+// used to get the FileType of a string
+// str = image/png or video/mp4
+var getFileType = function (str) {
+    for (var type in SUPPORTED_FORMATS) {
+        if (str.includes(type)) {
+            return SUPPORTED_FORMATS[type];
+        }
+    }
+    return FileType.Unknown;
+};
+exports.getFileType = getFileType;
 exports.createPostSchema = (0, yup_1.object)().shape({
     text: (0, yup_1.string)().min(1, "Too short!").max(300, "Too long!").required(),
     // only used on frontend :/
@@ -39,16 +66,22 @@ exports.createPostSchema = (0, yup_1.object)().shape({
         .test("FILE_SIZE", "File can't be bigger than ".concat(exports.MAX_FILE_SIZE_MB, "mb"), function (value) {
         return !value || (value && value.size < exports.MAX_FILE_SIZE_MB * 1000000);
     })
-        .test("FILE_TYPE", "File must be a jpg, jpeg, png, or gif", function (value) {
-        return !value || (value && SUPPORTED_FORMATS.includes(value === null || value === void 0 ? void 0 : value.type));
+        .test("FILE_TYPE", "File must be an image or video", function (value) {
+        if (!value)
+            return true;
+        return (0, exports.getFileType)(value.type) != FileType.Unknown;
     }),
 });
+// this one is used on the backend
 exports.createS3Schema = (0, yup_1.object)().shape({
     fileName: (0, yup_1.string)().min(1).max(255).required(),
     fileType: (0, yup_1.string)()
         .min(1)
-        .test("FILE_TYPE", "File must be a jpg, jpeg, png, or gif", function (value) { return SUPPORTED_FORMATS.includes(value || ""); } // how can string possibly ever be undefined here???
-    )
+        .test("FILE_TYPE", "File must be an image or video", function (value) {
+        if (!value)
+            return true;
+        return (0, exports.getFileType)(value) != FileType.Unknown;
+    })
         .required(),
 });
 //# sourceMappingURL=index.js.map
