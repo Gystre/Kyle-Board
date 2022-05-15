@@ -39,4 +39,4 @@ Set these environment vars in heroku:
 
 https://devcenter.heroku.com/articles/container-registry-and-runtime
 
-`heroku container:push web && heroku container:release web`
+`heroku container:login && heroku container:push web && heroku container:release web`
